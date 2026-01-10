@@ -1,92 +1,15 @@
 
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 
 // --- Global Declarations ---
+// FIX: Uncommented to declare global variables for external libraries.
 declare const html2pdf: any;
 declare const XLSX: any;
 
-// --- Types (from types.ts) ---
-interface ServiceRequest {
-    id: number;
-    service: string;
-    received: string;
-    completed: string;
-}
-
-interface ContractStatus {
-    id: number;
-    active: string;
-    inactive: string;
-    notes: string;
-}
-
-interface MalfunctionSummary {
-    id: number;
-    description: string;
-    count: string;
-}
-
-interface MalfunctionDetail {
-    id: number;
-    location: string;
-    general: string;
-    furniture: string;
-    decor: string;
-    fireAlarm: string;
-    waterLeak: string;
-    doors: string;
-    lighting: string;
-    flooring: string;
-    ac: string;
-    exterior: string;
-    panels: string;
-    electrical: string;
-    elevators: string;
-}
-
-interface RequestDistribution {
-    id: number;
-    metric: string;
-    total: string;
-    values: { [key: string]: string };
-}
-
-interface SecurityReportItem {
-    id: number;
-    metric: string;
-    cardActivations: string;
-    visitors: string;
-    supplierVisitors: string;
-    hallBookings: string;
-    evacuations: string;
-    securityReports: string;
-    emergencies: string;
-}
-
-interface TaskItem {
-    id: number;
-    subject: string;
-    task: string;
-}
-
-interface ChallengeItem {
-    id: number;
-    challenges: string;
-    update: string;
-    recommendation: string;
-}
-
-interface SignatureData {
-    id: number;
-    title: string;
-    name: string;
-    role: string;
-    signatureImage: string | null;
-}
-
 // --- Constants (from constants.ts) ---
-const initialServicesData: ServiceRequest[] = [
+const initialServicesData = [
     { id: 1, service: 'طلبات الصيانة', received: '', completed: '' },
     { id: 2, service: 'النثرية Petty Cash', received: '', completed: '' },
     { id: 3, service: 'طلبات الدعم اللوجستي', received: '', completed: '' },
@@ -99,24 +22,24 @@ const initialServicesData: ServiceRequest[] = [
     { id: 10, service: 'طلبات وخدمات حكومية', received: '', completed: '' },
 ];
 
-const initialLeaseContractsData: ContractStatus[] = [
+const initialLeaseContractsData = [
     { id: 1, active: '', inactive: '', notes: '' },
 ];
 
-const initialCommercialLicensesData: ContractStatus[] = [
+const initialCommercialLicensesData = [
     { id: 1, active: '', inactive: '', notes: '' },
 ];
 
-const initialServiceContractsData: ContractStatus[] = [
+const initialServiceContractsData = [
     { id: 1, active: '', inactive: '', notes: '' },
 ];
 
-const initialMalfunctionSummaryData: MalfunctionSummary[] = [
+const initialMalfunctionSummaryData = [
     { id: 1, description: 'عدد طلبات الصيانة الواردة من قسم إدارة المرافق', count: '' },
     { id: 2, description: 'عدد طلبات الصيانة الواردة من الادارات الأخرى', count: '' },
 ];
 
-const initialMalfunctionDetailData: MalfunctionDetail[] = [
+const initialMalfunctionDetailData = [
     { id: 1, location: 'مقر انجازات', general: '', furniture: '', decor: '', fireAlarm: '', waterLeak: '', doors: '', lighting: '', flooring: '', ac: '', exterior: '', panels: '', electrical: '', elevators: '' },
     { id: 2, location: 'مقر الدوريات', general: '', furniture: '', decor: '', fireAlarm: '', waterLeak: '', doors: '', lighting: '', flooring: '', ac: '', exterior: '', panels: '', electrical: '', elevators: '' },
     { id: 3, location: 'مقر ابن بطوطة', general: '', furniture: '', decor: '', fireAlarm: '', waterLeak: '', doors: '', lighting: '', flooring: '', ac: '', exterior: '', panels: '', electrical: '', elevators: '' },
@@ -126,14 +49,14 @@ const initialMalfunctionDetailData: MalfunctionDetail[] = [
     { id: 7, location: 'التكلفة / أمر شراء', general: '', furniture: '', decor: '', fireAlarm: '', waterLeak: '', doors: '', lighting: '', flooring: '', ac: '', exterior: '', panels: '', electrical: '', elevators: '' },
 ];
 
-const initialDistributionChannels: { id: string; name: string }[] = [
+const initialDistributionChannels = [
     { id: 'representative', name: 'الطلبات من خلال المندوب' },
     { id: 'emiratesPost', name: 'الطلبات من خلال بريد الامارات' },
     { id: 'aramex', name: 'الطلبات من خلال ارامكس' },
     { id: 'distribution', name: 'الطلبات من خلال توزيع' },
 ];
 
-const initialRequestDistributionData: RequestDistribution[] = [
+const initialRequestDistributionData = [
     {
         id: 1,
         metric: 'عدد الطلبات المستلمة',
@@ -165,29 +88,29 @@ const initialRequestDistributionData: RequestDistribution[] = [
 ];
 
 
-const initialSecurityReportData: SecurityReportItem[] = [
+const initialSecurityReportData = [
     { id: 1, metric: 'عدد الطلبات المستلمة', cardActivations: '', visitors: '', supplierVisitors: '', hallBookings: '', evacuations: '', securityReports: '', emergencies: ''},
     { id: 2, metric: 'عدد الطلبات المنفذة', cardActivations: '', visitors: '', supplierVisitors: '', hallBookings: '', evacuations: '', securityReports: '', emergencies: ''},
 ];
 
-const initialTasksData: TaskItem[] = Array.from({ length: 9 }, (_, i) => ({
+const initialTasksData = Array.from({ length: 9 }, (_, i) => ({
     id: i + 1,
     subject: '',
     task: '',
 }));
 
-const initialChallengesData: ChallengeItem[] = [
+const initialChallengesData = [
     { id: 1, challenges: '', update: '', recommendation: '' },
     { id: 2, challenges: '', update: '', recommendation: '' },
 ];
 
-const initialApprovalData: SignatureData[] = [
+const initialApprovalData = [
     { id: 1, title: 'إعداد', name: 'محمد سالم احمد', role: 'ضابط اول خدمات المرافق والاصول', signatureImage: null },
     { id: 2, title: 'مراجعة واعتماد', name: 'خالد محمد سالم', role: 'رئيس قسم ادارة المرافق', signatureImage: null },
 ];
 
 const getInitialRequestColumnWidths = () => {
-    const initialWidths: { [key: string]: number } = {
+    const initialWidths = {
         metric: 120,
         total: 160,
     };
@@ -221,68 +144,52 @@ const initialReportState = {
 // --- Components ---
 
 //--- Component: EditableCell.tsx ---
-interface EditableCellProps {
-  value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: 'text' | 'number';
-  className?: string;
-  placeholder?: string;
-  suffix?: string;
-}
-
-const EditableCell: React.FC<EditableCellProps> = ({ value, onChange, type = 'text', className = '', placeholder = '0', suffix }) => {
+const EditableCell = ({ value, onChange, type = 'text', className = '', placeholder = '0', suffix }) => {
   const hasValue = value !== '' && value !== null && value !== undefined && value !== 0 && value !== '0';
 
   if (suffix) {
     return (
-      <td className={`p-0 border ${className}`}>
-        <div className="relative w-full h-full flex items-center justify-center">
-          <input
-            type={type}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            className="w-full h-full py-2 px-4 bg-transparent border-none text-center focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-          {hasValue && (
-            <span className="absolute left-3 text-xs text-gray-500 pointer-events-none">
-              {suffix}
-            </span>
-          )}
-        </div>
-      </td>
+      React.createElement("td", { className: `p-0 border ${className}` },
+        React.createElement("div", { className: "relative w-full h-full flex items-center justify-center" },
+          React.createElement("input", {
+            type: type,
+            value: value,
+            onChange: onChange,
+            placeholder: placeholder,
+            className: "w-full h-full py-2 px-4 bg-transparent border-none text-center focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          }),
+          hasValue && (
+            React.createElement("span", { className: "absolute left-3 text-xs text-gray-500 pointer-events-none" },
+              suffix
+            )
+          )
+        )
+      )
     );
   }
 
   return (
-    <td className={`p-0 border ${className}`}>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full h-full py-2 px-4 bg-transparent border-none text-center focus:ring-2 focus:ring-blue-500 focus:outline-none"
-      />
-    </td>
+    React.createElement("td", { className: `p-0 border ${className}` },
+      React.createElement("input", {
+        type: type,
+        value: value,
+        onChange: onChange,
+        placeholder: placeholder,
+        className: "w-full h-full py-2 px-4 bg-transparent border-none text-center focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      })
+    )
   );
 };
 
 //--- Component: ServicesTable.tsx ---
-interface ServicesTableProps {
-  data: ServiceRequest[];
-  onUpdate: (index: number, field: keyof ServiceRequest, value: string) => void;
-  onAdd: () => void;
-  onDelete: (id: number) => void;
-}
-
-const ServicesTable: React.FC<ServicesTableProps> = ({ data, onUpdate, onAdd, onDelete }) => {
+const ServicesTable = ({ data, onUpdate, onAdd, onDelete }) => {
     const TrashIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
-        </svg>
+        React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+            React.createElement("path", { fillRule: "evenodd", d: "M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z", clipRule: "evenodd" })
+        )
     );
 
-    const calculateCompletion = (received: string, completed: string) => {
+    const calculateCompletion = (received, completed) => {
         const receivedNum = parseFloat(received);
         const completedNum = parseFloat(completed);
         if (isNaN(receivedNum) || isNaN(completedNum) || receivedNum === 0) {
@@ -292,215 +199,186 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ data, onUpdate, onAdd, on
     };
 
     return (
-        <>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200">
-                    <thead className="bg-slate-700 text-white">
-                        <tr>
-                            <th className="py-2 px-4 border w-16">م</th>
-                            <th className="py-2 px-4 border text-center">الخدمات</th>
-                            <th className="py-2 px-4 border">عدد الطلبات المستلمة</th>
-                            <th className="py-2 px-4 border">عدد الطلبات المنفذه</th>
-                            <th className="py-2 px-4 border">نسبة الانجاز</th>
-                            <th className="py-2 px-4 border w-24 no-print">إجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((row, index) => (
-                            <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50 text-sm">
-                                <td className="py-2 px-4 border bg-slate-700 text-white font-bold">{index + 1}</td>
-                                <EditableCell value={row.service} onChange={(e) => onUpdate(index, 'service', e.target.value)} placeholder="أدخل الخدمة" />
-                                <EditableCell type="number" value={row.received} onChange={(e) => onUpdate(index, 'received', e.target.value)} />
-                                <EditableCell type="number" value={row.completed} onChange={(e) => onUpdate(index, 'completed', e.target.value)} />
-                                <td className="py-2 px-4 border font-semibold text-xs">{calculateCompletion(row.received, row.completed)}</td>
-                                <td className="py-2 px-4 border no-print">
-                                    <button onClick={() => onDelete(row.id)} className="text-red-500 hover:text-red-700 p-1 mx-auto" aria-label="Delete row">
-                                        <TrashIcon />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <button onClick={onAdd} className="no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                إضافة صف جديد
-            </button>
-        </>
+        React.createElement(React.Fragment, null,
+            React.createElement("div", { className: "overflow-x-auto" },
+                React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+                    React.createElement("thead", { className: "bg-slate-700 text-white" },
+                        React.createElement("tr", null,
+                            React.createElement("th", { className: "py-2 px-4 border w-16" }, "م"),
+                            React.createElement("th", { className: "py-2 px-4 border text-center" }, "الخدمات"),
+                            React.createElement("th", { className: "py-2 px-4 border" }, "عدد الطلبات المستلمة"),
+                            React.createElement("th", { className: "py-2 px-4 border" }, "عدد الطلبات المنفذه"),
+                            React.createElement("th", { className: "py-2 px-4 border" }, "نسبة الانجاز"),
+                            React.createElement("th", { className: "py-2 px-4 border w-24 no-print" }, "إجراء")
+                        )
+                    ),
+                    React.createElement("tbody", null,
+                        data.map((row, index) => (
+                            React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50 text-sm" },
+                                React.createElement("td", { className: "py-2 px-4 border bg-slate-700 text-white font-bold" }, index + 1),
+                                React.createElement(EditableCell, { value: row.service, onChange: (e) => onUpdate(index, 'service', e.target.value), placeholder: "أدخل الخدمة" }),
+                                React.createElement(EditableCell, { type: "number", value: row.received, onChange: (e) => onUpdate(index, 'received', e.target.value) }),
+                                React.createElement(EditableCell, { type: "number", value: row.completed, onChange: (e) => onUpdate(index, 'completed', e.target.value) }),
+                                React.createElement("td", { className: "py-2 px-4 border font-semibold text-xs" }, calculateCompletion(row.received, row.completed)),
+                                React.createElement("td", { className: "py-2 px-4 border no-print" },
+                                    React.createElement("button", { onClick: () => onDelete(row.id), className: "text-red-500 hover:text-red-700 p-1 mx-auto", "aria-label": "Delete row" },
+                                        React.createElement(TrashIcon, null)
+                                    )
+                                )
+                            )
+                        ))
+                    )
+                )
+            ),
+            React.createElement("button", { onClick: onAdd, className: "no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300" },
+                "إضافة صف جديد"
+            )
+        )
     );
 };
 
 //--- Component: ContractsTable.tsx ---
-interface ContractsTableProps {
-  title: string;
-  data: ContractStatus[];
-  onUpdate: (index: number, field: keyof ContractStatus, value: string) => void;
-}
-
-const ContractsTable: React.FC<ContractsTableProps> = ({ title, data, onUpdate }) => {
+const ContractsTable = ({ title, data, onUpdate }) => {
   return (
-    <div>
-        <h3 className="bg-slate-800 text-white text-center font-bold text-md py-2 px-4 rounded-lg shadow-lg mb-3">{title}</h3>
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-                <thead className="bg-slate-700 text-white text-sm">
-                    <tr>
-                        <th className="py-2 px-4 border text-center">م</th>
-                        <th className="py-2 px-4 border text-center">فعالة</th>
-                        <th className="py-2 px-4 border text-center">غير فعالة</th>
-                        <th className="py-2 px-4 border text-center">الملاحظات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => (
-                        <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50 text-[10px]">
-                            <td className="py-2 px-4 border bg-slate-700 text-white font-bold">{row.id}</td>
-                            <EditableCell type="number" value={row.active} onChange={(e) => onUpdate(index, 'active', e.target.value)} />
-                            <EditableCell type="number" value={row.inactive} onChange={(e) => onUpdate(index, 'inactive', e.target.value)} />
-                            <EditableCell value={row.notes} onChange={(e) => onUpdate(index, 'notes', e.target.value)} placeholder="-" />
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    React.createElement("div", null,
+        React.createElement("h3", { className: "bg-slate-800 text-white text-center font-bold text-md py-2 px-4 rounded-lg shadow-lg mb-3" }, title),
+        React.createElement("div", { className: "overflow-x-auto" },
+            React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+                React.createElement("thead", { className: "bg-slate-700 text-white text-sm" },
+                    React.createElement("tr", null,
+                        React.createElement("th", { className: "py-2 px-4 border text-center" }, "م"),
+                        React.createElement("th", { className: "py-2 px-4 border text-center" }, "فعالة"),
+                        React.createElement("th", { className: "py-2 px-4 border text-center" }, "غير فعالة"),
+                        React.createElement("th", { className: "py-2 px-4 border text-center" }, "الملاحظات")
+                    )
+                ),
+                React.createElement("tbody", null,
+                    data.map((row, index) => (
+                        React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50 text-[10px]" },
+                            React.createElement("td", { className: "py-2 px-4 border bg-slate-700 text-white font-bold" }, row.id),
+                            React.createElement(EditableCell, { type: "number", value: row.active, onChange: (e) => onUpdate(index, 'active', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.inactive, onChange: (e) => onUpdate(index, 'inactive', e.target.value) }),
+                            React.createElement(EditableCell, { value: row.notes, onChange: (e) => onUpdate(index, 'notes', e.target.value), placeholder: "-" })
+                        )
+                    ))
+                )
+            )
+        )
+    )
   );
 };
 
 //--- Component: MalfunctionsSummaryTable.tsx ---
-interface MalfunctionsSummaryTableProps {
-  data: MalfunctionSummary[];
-  onUpdate: (index: number, field: keyof MalfunctionSummary, value: string) => void;
-}
-
-const MalfunctionsSummaryTable: React.FC<MalfunctionsSummaryTableProps> = ({ data, onUpdate }) => {
+const MalfunctionsSummaryTable = ({ data, onUpdate }) => {
     const total = data.reduce((acc, curr) => acc + (parseFloat(curr.count) || 0), 0);
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-                <thead className="bg-slate-700 text-white">
-                    <tr>
-                        <th className="py-2 px-4 border">م</th>
-                        <th className="py-2 px-4 border text-center">الوصف</th>
-                        <th className="py-2 px-4 border">عدد الاعطال</th>
-                        <th className="py-2 px-4 border">اجمالي عدد الاعطال</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => (
-                        <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50">
-                            <td className="py-2 px-4 border bg-slate-700 text-white font-bold">{row.id}</td>
-                            <td className="py-2 px-4 border text-center">{row.description}</td>
-                            <EditableCell type="number" value={row.count} onChange={(e) => onUpdate(index, 'count', e.target.value)} />
-                            {index === 0 && (
-                                <td className="py-2 px-4 border font-bold" rowSpan={data.length}>
-                                    {total}
-                                </td>
-                            )}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        React.createElement("div", { className: "overflow-x-auto" },
+            React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+                React.createElement("thead", { className: "bg-slate-700 text-white" },
+                    React.createElement("tr", null,
+                        React.createElement("th", { className: "py-2 px-4 border" }, "م"),
+                        React.createElement("th", { className: "py-2 px-4 border text-center" }, "الوصف"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "عدد الاعطال"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "اجمالي عدد الاعطال")
+                    )
+                ),
+                React.createElement("tbody", null,
+                    data.map((row, index) => (
+                        React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50" },
+                            React.createElement("td", { className: "py-2 px-4 border bg-slate-700 text-white font-bold" }, row.id),
+                            React.createElement("td", { className: "py-2 px-4 border text-center" }, row.description),
+                            React.createElement(EditableCell, { type: "number", value: row.count, onChange: (e) => onUpdate(index, 'count', e.target.value) }),
+                            index === 0 && (
+                                React.createElement("td", { className: "py-2 px-4 border font-bold", rowSpan: data.length },
+                                    total
+                                )
+                            )
+                        )
+                    ))
+                )
+            )
+        )
     );
 };
 
 //--- Component: MalfunctionsDetailTable.tsx ---
-interface MalfunctionsDetailTableProps {
-  data: MalfunctionDetail[];
-  onUpdate: (index: number, field: keyof MalfunctionDetail, value: string) => void;
-  onAdd: () => void;
-  onDelete: (id: number) => void;
-}
-
-const MalfunctionsDetailTable: React.FC<MalfunctionsDetailTableProps> = ({ data, onUpdate, onAdd, onDelete }) => {
+const MalfunctionsDetailTable = ({ data, onUpdate, onAdd, onDelete }) => {
   const TrashIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
-    </svg>
+    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+        React.createElement("path", { fillRule: "evenodd", d: "M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z", clipRule: "evenodd" })
+    )
   );
 
   return (
-    <>
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 text-xs sm:text-sm malfunction-detail-table">
-                <thead className="bg-slate-700 text-white text-center align-middle">
-                    <tr>
-                        <th rowSpan={2} className="py-3 px-2 border align-middle w-12">م</th>
-                        <th rowSpan={2} className="py-3 px-2 border align-middle min-w-[120px]">المقرات</th>
-                        <th colSpan={5} className="py-2 px-2 border bg-slate-700 font-bold">صيانة عامة</th>
-                        <th colSpan={4} className="py-2 px-2 border bg-slate-700 font-bold">الأنظمة</th>
-                        <th colSpan={3} className="py-2 px-2 border bg-slate-700 font-bold">البنية التحتية</th>
-                        <th rowSpan={2} className="py-3 px-2 border align-middle w-24 no-print">إجراء</th>
-                    </tr>
-                    <tr>
-                        <th className="py-2 px-2 border font-medium">اعطال عامة</th>
-                        <th className="py-2 px-2 border font-medium">اثاث</th>
-                        <th className="py-2 px-2 border font-medium">ديكور</th>
-                        <th className="py-2 px-2 border font-medium">ارضيات</th>
-                        <th className="py-2 px-2 border font-medium">ابواب</th>
-                        <th className="py-2 px-2 border font-medium">انذار حريق</th>
-                        <th className="py-2 px-2 border font-medium">انارة</th>
-                        <th className="py-2 px-2 border font-medium">كهرباء</th>
-                        <th className="py-2 px-2 border font-medium">تكييف</th>
-                        <th className="py-2 px-2 border font-medium">تسريب ماء</th>
-                        <th className="py-2 px-2 border font-medium">عطل اللوحات الخارجية</th>
-                        <th className="py-2 px-2 border font-medium">مصاعد</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => {
+    React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "overflow-x-auto" },
+            React.createElement("table", { className: "min-w-full bg-white border border-gray-200 text-xs sm:text-sm malfunction-detail-table" },
+                React.createElement("thead", { className: "bg-slate-700 text-white text-center align-middle" },
+                    React.createElement("tr", null,
+                        React.createElement("th", { rowSpan: 2, className: "py-3 px-2 border align-middle w-12" }, "م"),
+                        React.createElement("th", { rowSpan: 2, className: "py-3 px-2 border align-middle min-w-[120px]" }, "المقرات"),
+                        React.createElement("th", { colSpan: 5, className: "py-2 px-2 border bg-slate-700 font-bold" }, "صيانة عامة"),
+                        React.createElement("th", { colSpan: 4, className: "py-2 px-2 border bg-slate-700 font-bold" }, "الأنظمة"),
+                        React.createElement("th", { colSpan: 3, className: "py-2 px-2 border bg-slate-700 font-bold" }, "البنية التحتية"),
+                        React.createElement("th", { rowSpan: 2, className: "py-3 px-2 border align-middle w-24 no-print" }, "إجراء")
+                    ),
+                    React.createElement("tr", null,
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "اعطال عامة"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "اثاث"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "ديكور"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "ارضيات"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "ابواب"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "انذار حريق"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "انارة"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "كهرباء"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "تكييف"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "تسريب ماء"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "عطل اللوحات الخارجية"),
+                        React.createElement("th", { className: "py-2 px-2 border font-medium" }, "مصاعد")
+                    )
+                ),
+                React.createElement("tbody", null,
+                    data.map((row, index) => {
                         const isHighlighted = row.location.startsWith('التكلفة /');
                         const rowClasses = `text-center text-gray-700 ${isHighlighted ? 'bg-slate-100 hover:bg-slate-200' : 'hover:bg-gray-50'}`;
                         
                         return (
-                        <tr key={row.id} className={rowClasses}>
-                            <td className="py-2 px-2 border bg-slate-700 text-white font-bold">{index + 1}</td>
-                            <EditableCell value={row.location} onChange={(e) => onUpdate(index, 'location', e.target.value)} placeholder="أدخل المقر" className="font-semibold" />
-                            <EditableCell type="number" value={row.general} onChange={(e) => onUpdate(index, 'general', e.target.value)} />
-                            <EditableCell type="number" value={row.furniture} onChange={(e) => onUpdate(index, 'furniture', e.target.value)} />
-                            <EditableCell type="number" value={row.decor} onChange={(e) => onUpdate(index, 'decor', e.target.value)} />
-                            <EditableCell type="number" value={row.flooring} onChange={(e) => onUpdate(index, 'flooring', e.target.value)} />
-                            <EditableCell type="number" value={row.doors} onChange={(e) => onUpdate(index, 'doors', e.target.value)} />
-                            <EditableCell type="number" value={row.fireAlarm} onChange={(e) => onUpdate(index, 'fireAlarm', e.target.value)} />
-                            <EditableCell type="number" value={row.lighting} onChange={(e) => onUpdate(index, 'lighting', e.target.value)} />
-                            <EditableCell type="number" value={row.electrical} onChange={(e) => onUpdate(index, 'electrical', e.target.value)} />
-                            <EditableCell type="number" value={row.ac} onChange={(e) => onUpdate(index, 'ac', e.target.value)} />
-                            <EditableCell type="number" value={row.waterLeak} onChange={(e) => onUpdate(index, 'waterLeak', e.target.value)} />
-                            <EditableCell type="number" value={row.panels} onChange={(e) => onUpdate(index, 'panels', e.target.value)} />
-                            <EditableCell type="number" value={row.elevators} onChange={(e) => onUpdate(index, 'elevators', e.target.value)} />
-                            <td className="py-2 px-2 border no-print">
-                                <button onClick={() => onDelete(row.id)} className="text-red-500 hover:text-red-700 p-1 mx-auto" aria-label="Delete row">
-                                    <TrashIcon />
-                                </button>
-                            </td>
-                        </tr>
+                        React.createElement("tr", { key: row.id, className: rowClasses },
+                            React.createElement("td", { className: "py-2 px-2 border bg-slate-700 text-white font-bold" }, index + 1),
+                            React.createElement(EditableCell, { value: row.location, onChange: (e) => onUpdate(index, 'location', e.target.value), placeholder: "أدخل المقر", className: "font-semibold" }),
+                            React.createElement(EditableCell, { type: "number", value: row.general, onChange: (e) => onUpdate(index, 'general', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.furniture, onChange: (e) => onUpdate(index, 'furniture', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.decor, onChange: (e) => onUpdate(index, 'decor', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.flooring, onChange: (e) => onUpdate(index, 'flooring', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.doors, onChange: (e) => onUpdate(index, 'doors', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.fireAlarm, onChange: (e) => onUpdate(index, 'fireAlarm', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.lighting, onChange: (e) => onUpdate(index, 'lighting', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.electrical, onChange: (e) => onUpdate(index, 'electrical', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.ac, onChange: (e) => onUpdate(index, 'ac', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.waterLeak, onChange: (e) => onUpdate(index, 'waterLeak', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.panels, onChange: (e) => onUpdate(index, 'panels', e.target.value) }),
+                            React.createElement(EditableCell, { type: "number", value: row.elevators, onChange: (e) => onUpdate(index, 'elevators', e.target.value) }),
+                            React.createElement("td", { className: "py-2 px-2 border no-print" },
+                                React.createElement("button", { onClick: () => onDelete(row.id), className: "text-red-500 hover:text-red-700 p-1 mx-auto", "aria-label": "Delete row" },
+                                    React.createElement(TrashIcon, null)
+                                )
+                            )
+                        )
                         );
-                    })}
-                </tbody>
-            </table>
-        </div>
-        <button onClick={onAdd} className="no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-            إضافة مقر جديد
-        </button>
-    </>
+                    })
+                )
+            )
+        ),
+        React.createElement("button", { onClick: onAdd, className: "no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300" },
+            "إضافة مقر جديد"
+        )
+    )
   );
 };
 
 //--- Component: RequestsDistributionTable.tsx ---
-interface RequestsDistributionTableProps {
-  data: RequestDistribution[];
-  channels: { id: string; name: string }[];
-  headers: { metric: string; total: string };
-  columnWidths: { [key: string]: number };
-  onUpdate: (index: number, field: 'metric' | 'total' | string, value: string) => void;
-  onHeaderUpdate: (field: 'metric' | 'total', value: string) => void;
-  onChannelNameUpdate: (channelId: string, newName: string) => void;
-  onColumnWidthUpdate: (columnId: string, width: number) => void;
-}
-
-const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({ 
+const RequestsDistributionTable = ({ 
     data, 
     channels, 
     headers, 
@@ -510,9 +388,9 @@ const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({
     onChannelNameUpdate,
     onColumnWidthUpdate
 }) => {
-  const resizingColumnRef = useRef<{ id: string, startX: number, startWidth: number } | null>(null);
+  const resizingColumnRef = useRef(null);
 
-  const handleMouseDown = (e: React.MouseEvent, columnId: string) => {
+  const handleMouseDown = (e, columnId) => {
     e.preventDefault();
     resizingColumnRef.current = {
       id: columnId,
@@ -523,7 +401,7 @@ const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  const handleMouseMove = useCallback((e) => {
     if (!resizingColumnRef.current) return;
     const { id, startX, startWidth } = resizingColumnRef.current;
     const dx = e.clientX - startX;
@@ -544,7 +422,7 @@ const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
   
-  const calculateCompletionPercentage = (receivedStr: string, completedStr: string) => {
+  const calculateCompletionPercentage = (receivedStr, completedStr) => {
     const received = parseFloat(receivedStr) || 0;
     const completed = parseFloat(completedStr) || 0;
     if (received === 0) {
@@ -555,7 +433,7 @@ const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({
 
   if (data.length < 3) {
       return (
-          <p>البيانات غير كافية لعرض الجدول.</p>
+          React.createElement("p", null, "البيانات غير كافية لعرض الجدول.")
       )
   }
 
@@ -563,276 +441,249 @@ const RequestsDistributionTable: React.FC<RequestsDistributionTableProps> = ({
   const completedRow = data[1];
   const percentageRow = data[2];
 
-  const Resizer = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent) => void }) => (
-    <div
-      onMouseDown={onMouseDown}
-      className="absolute top-0 -right-1 h-full w-2 cursor-col-resize z-10"
-      style={{ touchAction: 'none' }}
-    />
+  const Resizer = ({ onMouseDown }) => (
+    React.createElement("div", {
+      onMouseDown: onMouseDown,
+      className: "absolute top-0 -right-1 h-full w-2 cursor-col-resize z-10",
+      style: { touchAction: 'none' }
+    })
   );
 
   return (
-    <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200" style={{ tableLayout: 'fixed' }}>
-             <colgroup>
-                <col style={{ width: `${columnWidths.metric || 120}px` }} />
-                <col style={{ width: `${columnWidths.total || 160}px` }} />
-                {channels.map(channel => (
-                    <col key={channel.id} style={{ width: `${columnWidths[channel.id] || 220}px` }} />
-                ))}
-            </colgroup>
-            <thead className="bg-slate-700 text-white text-sm">
-                <tr className="whitespace-nowrap">
-                    <th className="p-0 border text-center relative">
-                       <input
-                            type="text"
-                            value={headers.metric}
-                            onChange={(e) => onHeaderUpdate('metric', e.target.value)}
-                            className="w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        />
-                        <Resizer onMouseDown={(e) => handleMouseDown(e, 'metric')} />
-                    </th>
-                    <th className="p-0 border text-center relative">
-                        <input
-                            type="text"
-                            value={headers.total}
-                            onChange={(e) => onHeaderUpdate('total', e.target.value)}
-                            className="w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        />
-                        <Resizer onMouseDown={(e) => handleMouseDown(e, 'total')} />
-                    </th>
-                    {channels.map(channel => (
-                        <th key={channel.id} className="p-0 border text-center relative">
-                            <input
-                                type="text"
-                                value={channel.name}
-                                onChange={(e) => onChannelNameUpdate(channel.id, e.target.value)}
-                                className="w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            />
-                            <Resizer onMouseDown={(e) => handleMouseDown(e, channel.id)} />
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                <tr key={receivedRow.id} className="text-center text-gray-700 hover:bg-gray-50 whitespace-nowrap">
-                    <EditableCell
-                        value={receivedRow.metric}
-                        onChange={(e) => onUpdate(0, 'metric', e.target.value)}
-                        className="font-semibold"
-                        placeholder="أدخل المقياس"
-                    />
-                    <td rowSpan={3} className="p-0 border align-top">
-                        <div className="h-full flex flex-col">
-                            <div className="flex-1 flex items-center justify-center py-2 px-4 text-gray-700">
-                                {receivedRow.total || '0'}
-                            </div>
-                            <div className="flex-1 border-t border-gray-200 flex items-center justify-center py-2 px-4 text-gray-700 gap-2 text-sm">
-                                <span>{completedRow.total || '0'}</span>
-                            </div>
-                            <div className="flex-1 border-t border-gray-200 bg-slate-100 font-semibold flex items-center justify-center py-2 px-4">
-                                {calculateCompletionPercentage(receivedRow.total, completedRow.total)}
-                            </div>
-                        </div>
-                    </td>
-                    {channels.map(channel => (
-                        <EditableCell
-                            key={channel.id}
-                            type="number"
-                            value={receivedRow.values[channel.id] || ''}
-                            onChange={(e) => onUpdate(0, channel.id, e.target.value)}
-                        />
-                    ))}
-                </tr>
-                <tr key={completedRow.id} className="text-center text-gray-700 hover:bg-gray-50 text-sm">
-                    <EditableCell
-                        value={completedRow.metric}
-                        onChange={(e) => onUpdate(1, 'metric', e.target.value)}
-                        className="font-semibold"
-                        placeholder="أدخل المقياس"
-                    />
-                    {channels.map(channel => (
-                        <EditableCell
-                            key={channel.id}
-                            type="number"
-                            value={completedRow.values[channel.id] || ''}
-                            onChange={(e) => onUpdate(1, channel.id, e.target.value)}
-                        />
-                    ))}
-                </tr>
-                 <tr key={percentageRow.id} className="text-center text-gray-700 bg-slate-100 font-semibold whitespace-nowrap">
-                    <td className="py-2 px-4 border text-center font-semibold">{percentageRow.metric}</td>
-                    {channels.map(channel => (
-                         <td key={channel.id} className="py-2 px-4 border">
-                             {calculateCompletionPercentage(
+    React.createElement("div", { className: "overflow-x-auto" },
+        React.createElement("table", { className: "min-w-full bg-white border border-gray-200", style: { tableLayout: 'fixed' } },
+             React.createElement("colgroup", null,
+                React.createElement("col", { style: { width: `${columnWidths.metric || 120}px` } }),
+                React.createElement("col", { style: { width: `${columnWidths.total || 160}px` } }),
+                channels.map(channel => (
+                    React.createElement("col", { key: channel.id, style: { width: `${columnWidths[channel.id] || 220}px` } })
+                ))
+            ),
+            React.createElement("thead", { className: "bg-slate-700 text-white text-sm" },
+                React.createElement("tr", { className: "whitespace-nowrap" },
+                    React.createElement("th", { className: "p-0 border text-center relative" },
+                       React.createElement("input", {
+                            type: "text",
+                            value: headers.metric,
+                            onChange: (e) => onHeaderUpdate('metric', e.target.value),
+                            className: "w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        }),
+                        React.createElement(Resizer, { onMouseDown: (e) => handleMouseDown(e, 'metric') })
+                    ),
+                    React.createElement("th", { className: "p-0 border text-center relative" },
+                        React.createElement("input", {
+                            type: "text",
+                            value: headers.total,
+                            onChange: (e) => onHeaderUpdate('total', e.target.value),
+                            className: "w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        }),
+                        React.createElement(Resizer, { onMouseDown: (e) => handleMouseDown(e, 'total') })
+                    ),
+                    channels.map(channel => (
+                        React.createElement("th", { key: channel.id, className: "p-0 border text-center relative" },
+                            React.createElement("input", {
+                                type: "text",
+                                value: channel.name,
+                                onChange: (e) => onChannelNameUpdate(channel.id, e.target.value),
+                                className: "w-full h-full py-2 px-4 bg-transparent border-none text-center font-semibold text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            }),
+                            React.createElement(Resizer, { onMouseDown: (e) => handleMouseDown(e, channel.id) })
+                        )
+                    ))
+                )
+            ),
+            React.createElement("tbody", null,
+                React.createElement("tr", { key: receivedRow.id, className: "text-center text-gray-700 hover:bg-gray-50 whitespace-nowrap" },
+                    React.createElement(EditableCell, {
+                        value: receivedRow.metric,
+                        onChange: (e) => onUpdate(0, 'metric', e.target.value),
+                        className: "font-semibold",
+                        placeholder: "أدخل المقياس"
+                    }),
+                    React.createElement("td", { rowSpan: 3, className: "p-0 border align-top" },
+                        React.createElement("div", { className: "h-full flex flex-col" },
+                            React.createElement("div", { className: "flex-1 flex items-center justify-center py-2 px-4 text-gray-700" },
+                                receivedRow.total || '0'
+                            ),
+                            React.createElement("div", { className: "flex-1 border-t border-gray-200 flex items-center justify-center py-2 px-4 text-gray-700 gap-2 text-sm" },
+                                React.createElement("span", null, completedRow.total || '0')
+                            ),
+                            React.createElement("div", { className: "flex-1 border-t border-gray-200 bg-slate-100 font-semibold flex items-center justify-center py-2 px-4" },
+                                calculateCompletionPercentage(receivedRow.total, completedRow.total)
+                            )
+                        )
+                    ),
+                    channels.map(channel => (
+                        React.createElement(EditableCell, {
+                            key: channel.id,
+                            type: "number",
+                            value: receivedRow.values[channel.id] || '',
+                            onChange: (e) => onUpdate(0, channel.id, e.target.value)
+                        })
+                    ))
+                ),
+                React.createElement("tr", { key: completedRow.id, className: "text-center text-gray-700 hover:bg-gray-50 text-sm" },
+                    React.createElement(EditableCell, {
+                        value: completedRow.metric,
+                        onChange: (e) => onUpdate(1, 'metric', e.target.value),
+                        className: "font-semibold",
+                        placeholder: "أدخل المقياس"
+                    }),
+                    channels.map(channel => (
+                        React.createElement(EditableCell, {
+                            key: channel.id,
+                            type: "number",
+                            value: completedRow.values[channel.id] || '',
+                            onChange: (e) => onUpdate(1, channel.id, e.target.value)
+                        })
+                    ))
+                ),
+                 React.createElement("tr", { key: percentageRow.id, className: "text-center text-gray-700 bg-slate-100 font-semibold whitespace-nowrap" },
+                    React.createElement("td", { className: "py-2 px-4 border text-center font-semibold" }, percentageRow.metric),
+                    channels.map(channel => (
+                         React.createElement("td", { key: channel.id, className: "py-2 px-4 border" },
+                             calculateCompletionPercentage(
                                 receivedRow.total, 
                                 completedRow.values[channel.id] || '0'
-                             )}
-                         </td>
-                    ))}
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                             )
+                         )
+                    ))
+                )
+            )
+        )
+    )
   );
 };
 
 //--- Component: SecurityReportTable.tsx ---
-interface SecurityReportTableProps {
-  data: SecurityReportItem[];
-  onUpdate: (index: number, field: keyof SecurityReportItem, value: string) => void;
-}
-
-const SecurityReportTable: React.FC<SecurityReportTableProps> = ({ data, onUpdate }) => {
+const SecurityReportTable = ({ data, onUpdate }) => {
   return (
-    <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-slate-700 text-white text-sm">
-                <tr>
-                    <th className="py-2 px-4 border text-center">الطلبات</th>
-                    <th className="py-2 px-4 border text-center">طلبات تفعيل البطاقات</th>
-                    <th className="py-2 px-4 border text-center">عدد الزوار</th>
-                    <th className="py-2 px-4 border text-center">عدد الزوار من الموردين</th>
-                    <th className="py-2 px-4 border text-center">طلبات حجز القاعات</th>
-                    <th className="py-2 px-4 border text-center">حالات الاخلاء</th>
-                    <th className="py-2 px-4 border text-center">تقارير الأمنية (كاميرات + حراس أمن)</th>
-                    <th className="py-2 px-4 border text-center">الحالات الطارئة</th>
-                </tr>
-            </thead>
-            <tbody>
-                {data.map((row, index) => (
-                    <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50">
-                        <td className="py-2 px-4 border text-center font-semibold">{row.metric}</td>
-                        <EditableCell type="number" value={row.cardActivations} onChange={(e) => onUpdate(index, 'cardActivations', e.target.value)} />
-                        <EditableCell type="number" value={row.visitors} onChange={(e) => onUpdate(index, 'visitors', e.target.value)} />
-                        <EditableCell type="number" value={row.supplierVisitors} onChange={(e) => onUpdate(index, 'supplierVisitors', e.target.value)} />
-                        <EditableCell type="number" value={row.hallBookings} onChange={(e) => onUpdate(index, 'hallBookings', e.target.value)} />
-                        <EditableCell type="number" value={row.evacuations} onChange={(e) => onUpdate(index, 'evacuations', e.target.value)} />
-                        <EditableCell type="number" value={row.securityReports} onChange={(e) => onUpdate(index, 'securityReports', e.target.value)} />
-                        <EditableCell type="number" value={row.emergencies} onChange={(e) => onUpdate(index, 'emergencies', e.target.value)} />
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    </div>
+    React.createElement("div", { className: "overflow-x-auto" },
+        React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+            React.createElement("thead", { className: "bg-slate-700 text-white text-sm" },
+                React.createElement("tr", null,
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "الطلبات"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "طلبات تفعيل البطاقات"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "عدد الزوار"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "عدد الزوار من الموردين"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "طلبات حجز القاعات"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "حالات الاخلاء"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "تقارير الأمنية (كاميرات + حراس أمن)"),
+                    React.createElement("th", { className: "py-2 px-4 border text-center" }, "الحالات الطارئة")
+                )
+            ),
+            React.createElement("tbody", null,
+                data.map((row, index) => (
+                    React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50" },
+                        React.createElement("td", { className: "py-2 px-4 border text-center font-semibold" }, row.metric),
+                        React.createElement(EditableCell, { type: "number", value: row.cardActivations, onChange: (e) => onUpdate(index, 'cardActivations', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.visitors, onChange: (e) => onUpdate(index, 'visitors', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.supplierVisitors, onChange: (e) => onUpdate(index, 'supplierVisitors', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.hallBookings, onChange: (e) => onUpdate(index, 'hallBookings', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.evacuations, onChange: (e) => onUpdate(index, 'evacuations', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.securityReports, onChange: (e) => onUpdate(index, 'securityReports', e.target.value) }),
+                        React.createElement(EditableCell, { type: "number", value: row.emergencies, onChange: (e) => onUpdate(index, 'emergencies', e.target.value) })
+                    )
+                ))
+            )
+        )
+    )
   );
 };
 
 //--- Component: TasksTable.tsx ---
-interface TasksTableProps {
-  data: TaskItem[];
-  onUpdate: (index: number, field: keyof TaskItem, value: string) => void;
-  onAdd: () => void;
-  onDelete: (id: number) => void;
-}
-
-const TasksTable: React.FC<TasksTableProps> = ({ data, onUpdate, onAdd, onDelete }) => {
+const TasksTable = ({ data, onUpdate, onAdd, onDelete }) => {
   const TrashIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
-    </svg>
+    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+        React.createElement("path", { fillRule: "evenodd", d: "M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z", clipRule: "evenodd" })
+    )
   );
 
   return (
-    <>
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-                <thead className="bg-slate-700 text-white">
-                    <tr>
-                        <th className="py-2 px-4 border w-16">م</th>
-                        <th className="py-2 px-4 border">الموضوع</th>
-                        <th className="py-2 px-4 border">المهمة</th>
-                        <th className="py-2 px-4 border w-32">نسبة الانجاز</th>
-                        <th className="py-2 px-4 border w-24 no-print">إجراء</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => (
-                        <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50 text-sm">
-                            <td className="py-2 px-4 border bg-slate-700 text-white font-bold">{index + 1}</td>
-                            <EditableCell value={row.subject} onChange={(e) => onUpdate(index, 'subject', e.target.value)} placeholder="أدخل الموضوع" />
-                            <EditableCell value={row.task} onChange={(e) => onUpdate(index, 'task', e.target.value)} placeholder="أدخل المهمة" />
-                            <td className="py-2 px-4 border font-semibold text-xs">100%</td>
-                            <td className="py-2 px-4 border no-print">
-                                <button onClick={() => onDelete(row.id)} className="text-red-500 hover:text-red-700 p-1 mx-auto" aria-label="Delete row">
-                                    <TrashIcon />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-        <button onClick={onAdd} className="no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-            إضافة مهمة جديدة
-        </button>
-    </>
+    React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "overflow-x-auto" },
+            React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+                React.createElement("thead", { className: "bg-slate-700 text-white" },
+                    React.createElement("tr", null,
+                        React.createElement("th", { className: "py-2 px-4 border w-16" }, "م"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "الموضوع"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "المهمة"),
+                        React.createElement("th", { className: "py-2 px-4 border w-32" }, "نسبة الانجاز"),
+                        React.createElement("th", { className: "py-2 px-4 border w-24 no-print" }, "إجراء")
+                    )
+                ),
+                React.createElement("tbody", null,
+                    data.map((row, index) => (
+                        React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50 text-sm" },
+                            React.createElement("td", { className: "py-2 px-4 border bg-slate-700 text-white font-bold" }, index + 1),
+                            React.createElement(EditableCell, { value: row.subject, onChange: (e) => onUpdate(index, 'subject', e.target.value), placeholder: "أدخل الموضوع" }),
+                            React.createElement(EditableCell, { value: row.task, onChange: (e) => onUpdate(index, 'task', e.target.value), placeholder: "أدخل المهمة" }),
+                            React.createElement("td", { className: "py-2 px-4 border font-semibold text-xs" }, "100%"),
+                            React.createElement("td", { className: "py-2 px-4 border no-print" },
+                                React.createElement("button", { onClick: () => onDelete(row.id), className: "text-red-500 hover:text-red-700 p-1 mx-auto", "aria-label": "Delete row" },
+                                    React.createElement(TrashIcon, null)
+                                )
+                            )
+                        )
+                    ))
+                )
+            )
+        ),
+        React.createElement("button", { onClick: onAdd, className: "no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300" },
+            "إضافة مهمة جديدة"
+        )
+    )
   );
 };
 
 //--- Component: ChallengesTable.tsx ---
-interface ChallengesTableProps {
-  data: ChallengeItem[];
-  onUpdate: (index: number, field: keyof ChallengeItem, value: string) => void;
-  onAdd: () => void;
-  onDelete: (id: number) => void;
-}
-
-const ChallengesTable: React.FC<ChallengesTableProps> = ({ data, onUpdate, onAdd, onDelete }) => {
+const ChallengesTable = ({ data, onUpdate, onAdd, onDelete }) => {
   const TrashIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
-    </svg>
+    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+        React.createElement("path", { fillRule: "evenodd", d: "M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z", clipRule: "evenodd" })
+    )
   );
 
   return (
-    <>
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-                <thead className="bg-slate-700 text-white">
-                    <tr>
-                        <th className="py-2 px-4 border w-16">م</th>
-                        <th className="py-2 px-4 border">التحديات والعوائق</th>
-                        <th className="py-2 px-4 border">التحديث</th>
-                        <th className="py-2 px-4 border">التوصية</th>
-                        <th className="py-2 px-4 border w-24 no-print">إجراء</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((row, index) => (
-                        <tr key={row.id} className="text-center text-gray-700 hover:bg-gray-50">
-                            <td className="py-2 px-4 border bg-slate-700 text-white font-bold">{index + 1}</td>
-                            <EditableCell value={row.challenges} onChange={(e) => onUpdate(index, 'challenges', e.target.value)} placeholder="-" />
-                            <EditableCell value={row.update} onChange={(e) => onUpdate(index, 'update', e.target.value)} placeholder="-" />
-                            <EditableCell value={row.recommendation} onChange={(e) => onUpdate(index, 'recommendation', e.target.value)} placeholder="-" />
-                            <td className="py-2 px-4 border no-print">
-                                <button onClick={() => onDelete(row.id)} className="text-red-500 hover:text-red-700 p-1 mx-auto" aria-label="Delete row">
-                                    <TrashIcon />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-        <button onClick={onAdd} className="no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-            إضافة صف جديد
-        </button>
-    </>
+    React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "overflow-x-auto" },
+            React.createElement("table", { className: "min-w-full bg-white border border-gray-200" },
+                React.createElement("thead", { className: "bg-slate-700 text-white" },
+                    React.createElement("tr", null,
+                        React.createElement("th", { className: "py-2 px-4 border w-16" }, "م"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "التحديات والعوائق"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "التحديث"),
+                        React.createElement("th", { className: "py-2 px-4 border" }, "التوصية"),
+                        React.createElement("th", { className: "py-2 px-4 border w-24 no-print" }, "إجراء")
+                    )
+                ),
+                React.createElement("tbody", null,
+                    data.map((row, index) => (
+                        React.createElement("tr", { key: row.id, className: "text-center text-gray-700 hover:bg-gray-50" },
+                            React.createElement("td", { className: "py-2 px-4 border bg-slate-700 text-white font-bold" }, index + 1),
+                            React.createElement(EditableCell, { value: row.challenges, onChange: (e) => onUpdate(index, 'challenges', e.target.value), placeholder: "-" }),
+                            React.createElement(EditableCell, { value: row.update, onChange: (e) => onUpdate(index, 'update', e.target.value), placeholder: "-" }),
+                            React.createElement(EditableCell, { value: row.recommendation, onChange: (e) => onUpdate(index, 'recommendation', e.target.value), placeholder: "-" }),
+                            React.createElement("td", { className: "py-2 px-4 border no-print" },
+                                React.createElement("button", { onClick: () => onDelete(row.id), className: "text-red-500 hover:text-red-700 p-1 mx-auto", "aria-label": "Delete row" },
+                                    React.createElement(TrashIcon, null)
+                                )
+                            )
+                        )
+                    ))
+                )
+            )
+        ),
+        React.createElement("button", { onClick: onAdd, className: "no-print mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300" },
+            "إضافة صف جديد"
+        )
+    )
   );
 };
 
 //--- Component: ApprovalSection.tsx ---
-interface SignatureBoxProps {
-    title: string;
-    name: string;
-    role: string;
-    signatureImage: string | null;
-    onUpdate: (field: 'name' | 'role' | 'signatureImage', value: string | null) => void;
-}
-
-const SignatureBox: React.FC<SignatureBoxProps> = ({ title, name, role, signatureImage, onUpdate }) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
+const SignatureBox = ({ title, name, role, signatureImage, onUpdate }) => {
+    const fileInputRef = useRef(null);
     
     const formattedDate = new Date().toLocaleDateString('ar-AE', {
         year: 'numeric',
@@ -844,18 +695,18 @@ const SignatureBox: React.FC<SignatureBoxProps> = ({ title, name, role, signatur
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                onUpdate('signatureImage', reader.result as string);
+                onUpdate('signatureImage', reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleRemoveSignature = (e: React.MouseEvent) => {
+    const handleRemoveSignature = (e) => {
         e.stopPropagation();
         onUpdate('signatureImage', null);
         if (fileInputRef.current) {
@@ -864,227 +715,211 @@ const SignatureBox: React.FC<SignatureBoxProps> = ({ title, name, role, signatur
     };
 
     return (
-        <div className="flex-1 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col">
-            <div className="bg-slate-700 p-3 text-white text-center">
-                <h3 className="font-bold text-lg">{title}</h3>
-            </div>
-            <div className="p-6 flex-grow flex flex-col">
-                <div className="flex-grow space-y-6">
-                    <div>
-                        <label className="text-sm font-medium text-gray-500">الاسم</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => onUpdate('name', e.target.value)}
-                            className="signature-input w-full bg-transparent border-0 border-b-2 border-gray-300 text-gray-800 p-2 focus:ring-0 focus:border-blue-500 focus:outline-none text-base transition-colors duration-300"
-                            aria-label={`${title} Name`}
-                        />
-                    </div>
-                    <div>
-                        <label className="text-sm font-medium text-gray-500">المنصب</label>
-                         <input
-                            type="text"
-                            value={role}
-                            onChange={(e) => onUpdate('role', e.target.value)}
-                            className="signature-input w-full bg-transparent border-0 border-b-2 border-gray-300 text-sm text-gray-600 p-2 focus:ring-0 focus:border-blue-500 focus:outline-none transition-colors duration-300"
-                            aria-label={`${title} Role`}
-                        />
-                    </div>
-                </div>
-                <div className="mt-10">
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-800 font-semibold">التاريخ:</span>
-                        <span className="w-3/5 text-center font-medium text-black">{formattedDate}</span>
-                    </div>
-                    <div className="flex justify-between items-start text-sm mt-6">
-                        <span className="text-gray-800 font-semibold pt-4">التوقيع:</span>
-                        <div 
-                            className="w-3/5 h-24 border-2 border-dashed border-gray-400 rounded-md flex justify-center items-center cursor-pointer hover:bg-gray-50 relative group transition-colors duration-300"
-                            onClick={handleSignatureClick}
-                            role="button"
-                            tabIndex={0}
-                            aria-label="Add signature"
-                        >
-                            <input 
-                                type="file" 
-                                ref={fileInputRef} 
-                                onChange={handleFileChange} 
-                                className="hidden" 
-                                accept="image/png, image/jpeg, image/svg+xml" 
-                            />
-                            {signatureImage ? (
-                                <>
-                                    <img src={signatureImage} alt="Signature" className="max-w-full max-h-full object-contain p-2" />
-                                    <button 
-                                        onClick={handleRemoveSignature} 
-                                        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs shadow-lg hover:bg-red-700"
-                                        aria-label="Remove signature"
-                                    >
-                                        ✕
-                                    </button>
-                                </>
+        React.createElement("div", { className: "flex-1 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col" },
+            React.createElement("div", { className: "bg-slate-700 p-3 text-white text-center" },
+                React.createElement("h3", { className: "font-bold text-lg" }, title)
+            ),
+            React.createElement("div", { className: "p-6 flex-grow flex flex-col" },
+                React.createElement("div", { className: "flex-grow space-y-6" },
+                    React.createElement("div", null,
+                        React.createElement("label", { className: "text-sm font-medium text-gray-500" }, "الاسم"),
+                        React.createElement("input", {
+                            type: "text",
+                            value: name,
+                            onChange: (e) => onUpdate('name', e.target.value),
+                            className: "signature-input w-full bg-transparent border-0 border-b-2 border-gray-300 text-gray-800 p-2 focus:ring-0 focus:border-blue-500 focus:outline-none text-base transition-colors duration-300",
+                            "aria-label": `${title} Name`
+                        })
+                    ),
+                    React.createElement("div", null,
+                        React.createElement("label", { className: "text-sm font-medium text-gray-500" }, "المنصب"),
+                         React.createElement("input", {
+                            type: "text",
+                            value: role,
+                            onChange: (e) => onUpdate('role', e.target.value),
+                            className: "signature-input w-full bg-transparent border-0 border-b-2 border-gray-300 text-sm text-gray-600 p-2 focus:ring-0 focus:border-blue-500 focus:outline-none transition-colors duration-300",
+                            "aria-label": `${title} Role`
+                        })
+                    )
+                ),
+                React.createElement("div", { className: "mt-10" },
+                    React.createElement("div", { className: "flex justify-between items-center text-sm" },
+                        React.createElement("span", { className: "text-gray-800 font-semibold" }, "التاريخ:"),
+                        React.createElement("span", { className: "w-3/5 text-center font-medium text-black" }, formattedDate)
+                    ),
+                    React.createElement("div", { className: "flex justify-between items-start text-sm mt-6" },
+                        React.createElement("span", { className: "text-gray-800 font-semibold pt-4" }, "التوقيع:"),
+                        React.createElement("div", { 
+                            className: "w-3/5 h-24 border-2 border-dashed border-gray-400 rounded-md flex justify-center items-center cursor-pointer hover:bg-gray-50 relative group transition-colors duration-300",
+                            onClick: handleSignatureClick,
+                            role: "button",
+                            tabIndex: 0,
+                            "aria-label": "Add signature"
+                        },
+                            React.createElement("input", { 
+                                type: "file", 
+                                ref: fileInputRef, 
+                                onChange: handleFileChange, 
+                                className: "hidden", 
+                                accept: "image/png, image/jpeg, image/svg+xml" 
+                            }),
+                            signatureImage ? (
+                                React.createElement(React.Fragment, null,
+                                    React.createElement("img", { src: signatureImage, alt: "Signature", className: "max-w-full max-h-full object-contain p-2" }),
+                                    React.createElement("button", { 
+                                        onClick: handleRemoveSignature, 
+                                        className: "absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs shadow-lg hover:bg-red-700",
+                                        "aria-label": "Remove signature"
+                                    },
+                                        "✕"
+                                    )
+                                )
                             ) : (
-                                <span className="text-gray-500 text-xs text-center">انقر لإضافة توقيع</span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                React.createElement("span", { className: "text-gray-500 text-xs text-center" }, "انقر لإضافة توقيع")
+                            )
+                        )
+                    )
+                )
+            )
+        )
     );
 };
 
-interface ApprovalSectionProps {
-    data: SignatureData[];
-    onUpdate: (index: number, field: keyof SignatureData, value: string | null) => void;
-}
-
-const ApprovalSection: React.FC<ApprovalSectionProps> = ({ data, onUpdate }) => {
+const ApprovalSection = ({ data, onUpdate }) => {
   return (
-    <div className="pt-8 border-t-2 border-gray-200 approval-section">
-        <div className="flex flex-col md:flex-row gap-8">
-            {data.map((signature, index) => (
-                 <SignatureBox
-                    key={signature.id}
-                    title={signature.title}
-                    name={signature.name}
-                    role={signature.role}
-                    signatureImage={signature.signatureImage}
-                    onUpdate={(field, value) => onUpdate(index, field, value)}
-                />
-            ))}
-        </div>
-    </div>
+    React.createElement("div", { className: "pt-8 border-t-2 border-gray-200 approval-section" },
+        React.createElement("div", { className: "flex flex-col md:flex-row gap-8" },
+            data.map((signature, index) => (
+                 React.createElement(SignatureBox, {
+                    key: signature.id,
+                    title: signature.title,
+                    name: signature.name,
+                    role: signature.role,
+                    signatureImage: signature.signatureImage,
+                    onUpdate: (field, value) => onUpdate(index, field, value)
+                })
+            ))
+        )
+    )
   );
 };
 
 //--- Component: Footer.tsx ---
-const Footer: React.FC = () => {
+const Footer = () => {
     return (
-        <footer className="bg-slate-900 text-gray-300 no-print">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-8">
-                    <div className="lg:col-span-2">
-                        <h3 className="text-lg font-bold text-white mb-2">عن SAHER</h3>
-                        <div className="w-12 h-0.5 bg-yellow-400 mb-4"></div>
-                        <p className="text-sm leading-relaxed">
-                            شركة رائدة في تقديم الحلول والأنظمة الذكية، ملتزمون بالابتكار والجودة لتحقيق أعلى مستويات الكفاءة والخدمات الذكية.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-white mb-2">روابط سريعة</h3>
-                        <div className="w-12 h-0.5 bg-yellow-400 mb-4"></div>
-                        <ul className="space-y-2 text-sm">
-                            <li><a href="#" className="hover:text-white transition-colors duration-300">الرئيسية</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors duration-300">خدماتنا</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors duration-300">تواصل معنا</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-white mb-2">تواصل معنا</h3>
-                        <div className="w-12 h-0.5 bg-yellow-400 mb-4"></div>
-                        <ul className="space-y-3 text-sm">
-                            <li className="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-3 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span>Level 3, Baynona Building, Khalif City A</span>
-                            </li>
-                            <li className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                                <span className="whitespace-nowrap" dir="ltr">+971 4 123 4567</span>
-                            </li>
-                            <li className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                <a href="mailto:Logistic@saher.ae" className="hover:text-white transition-colors duration-300">Logistic@saher.ae</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div className="mt-8 pt-8 border-t border-slate-800 flex flex-col items-center text-sm text-gray-400 pb-8">
-                    <p> اعداد وتصميم / خالد الجفري</p>
-                    <p className="mt-2">جميع الحقوق محفوظة لشركة © {new Date().getFullYear()} SAHER FOR SMART SERVICES</p>
-                </div>
-            </div>
-        </footer>
+        React.createElement("footer", { className: "bg-slate-900 text-gray-300 no-print" },
+            React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
+                React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-8" },
+                    React.createElement("div", { className: "lg:col-span-2" },
+                        React.createElement("h3", { className: "text-lg font-bold text-white mb-2" }, "عن SAHER"),
+                        React.createElement("div", { className: "w-12 h-0.5 bg-yellow-400 mb-4" }),
+                        React.createElement("p", { className: "text-sm leading-relaxed" },
+                            "شركة رائدة في تقديم الحلول والأنظمة الذكية، ملتزمون بالابتكار والجودة لتحقيق أعلى مستويات الكفاءة والخدمات الذكية."
+                        )
+                    ),
+                    React.createElement("div", null,
+                        React.createElement("h3", { className: "text-lg font-bold text-white mb-2" }, "روابط سريعة"),
+                        React.createElement("div", { className: "w-12 h-0.5 bg-yellow-400 mb-4" }),
+                        React.createElement("ul", { className: "space-y-2 text-sm" },
+                            React.createElement("li", null, React.createElement("a", { href: "#", className: "hover:text-white transition-colors duration-300" }, "الرئيسية")),
+                            React.createElement("li", null, React.createElement("a", { href: "#", className: "hover:text-white transition-colors duration-300" }, "خدماتنا")),
+                            React.createElement("li", null, React.createElement("a", { href: "#", className: "hover:text-white transition-colors duration-300" }, "تواصل معنا"))
+                        )
+                    ),
+                    React.createElement("div", null,
+                        React.createElement("h3", { className: "text-lg font-bold text-white mb-2" }, "تواصل معنا"),
+                        React.createElement("div", { className: "w-12 h-0.5 bg-yellow-400 mb-4" }),
+                        React.createElement("ul", { className: "space-y-3 text-sm" },
+                            React.createElement("li", { className: "flex items-start" },
+                                React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-3 mt-0.5 flex-shrink-0", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" },
+                                    React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" }),
+                                    React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M15 11a3 3 0 11-6 0 3 3 0 016 0z" })
+                                ),
+                                React.createElement("span", null, "Level 3, Baynona Building, Khalif City A")
+                            ),
+                            React.createElement("li", { className: "flex items-center" },
+                                React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-3 flex-shrink-0", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" },
+                                    React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" })
+                                ),
+                                React.createElement("span", { className: "whitespace-nowrap", dir: "ltr" }, "+971 4 123 4567")
+                            ),
+                            React.createElement("li", { className: "flex items-center" },
+                                React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-3 flex-shrink-0", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" },
+                                    React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" })
+                                ),
+                                React.createElement("a", { href: "mailto:Logistic@saher.ae", className: "hover:text-white transition-colors duration-300" }, "Logistic@saher.ae")
+                            )
+                        )
+                    )
+                ),
+                React.createElement("div", { className: "mt-8 pt-8 border-t border-slate-800 flex flex-col items-center text-sm text-gray-400 pb-8" },
+                    React.createElement("p", null, " اعداد وتصميم / خالد الجفري"),
+                    React.createElement("p", { className: "mt-2" }, `جميع الحقوق محفوظة لشركة © ${new Date().getFullYear()} SAHER FOR SMART SERVICES`)
+                )
+            )
+        )
     );
 };
 
 //--- Component: CollapsibleSection.tsx ---
-interface CollapsibleSectionProps {
-  title: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}
-
-const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, isOpen, onToggle, children }) => {
-    const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className={`h-6 w-6 text-white transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`} 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor" 
-            strokeWidth="2"
-        >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
+const CollapsibleSection = ({ title, isOpen, onToggle, children }) => {
+    const ChevronIcon = ({ isOpen }) => (
+        React.createElement("svg", { 
+            xmlns: "http://www.w3.org/2000/svg", 
+            className: `h-6 w-6 text-white transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`, 
+            fill: "none", 
+            viewBox: "0 0 24 24", 
+            stroke: "currentColor", 
+            strokeWidth: "2"
+        },
+            React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M19 9l-7 7-7-7" })
+        )
     );
 
     return (
-        <section className="mb-6 print:mb-0">
-            <h2 className="hidden print:block text-xl font-bold text-gray-700">{title}</h2>
-            <div className="rounded-lg shadow-md overflow-hidden no-print">
-                <button
-                    type="button"
-                    onClick={onToggle}
-                    className="w-full flex justify-between items-center p-4 text-right bg-slate-800 text-white font-bold text-xl transition-colors duration-300 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    aria-expanded={isOpen}
-                >
-                    <span>{title}</span>
-                    <ChevronIcon isOpen={isOpen} />
-                </button>
-                <div
-                    className={`collapsible-content bg-white transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}
-                >
-                    <div className="p-6 border-t border-slate-700">
-                        {children}
-                    </div>
-                </div>
-            </div>
-            <div className="hidden print:block">
-                {children}
-            </div>
-        </section>
+        React.createElement("section", { className: "mb-6 print:mb-0" },
+            React.createElement("h2", { className: "hidden print:block text-xl font-bold text-gray-700" }, title),
+            React.createElement("div", { className: "rounded-lg shadow-md overflow-hidden no-print" },
+                React.createElement("button", {
+                    type: "button",
+                    onClick: onToggle,
+                    className: "w-full flex justify-between items-center p-4 text-right bg-slate-800 text-white font-bold text-xl transition-colors duration-300 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                    "aria-expanded": isOpen
+                },
+                    React.createElement("span", null, title),
+                    React.createElement(ChevronIcon, { isOpen: isOpen })
+                ),
+                React.createElement("div", {
+                    className: `collapsible-content bg-white transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`
+                },
+                    React.createElement("div", { className: "p-6 border-t border-slate-700" },
+                        children
+                    )
+                )
+            ),
+            React.createElement("div", { className: "hidden print:block" },
+                children
+            )
+        )
     );
 };
 
 
 // --- Main App Component ---
-const App: React.FC = () => {
+const App = () => {
     const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
     const currentMonthIndex = new Date().getMonth();
     const startYear = 2020;
     const endYear = 2090;
     const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => (startYear + i).toString());
 
-    type ArrayStateKey = {
-      [K in keyof typeof initialReportState]: (typeof initialReportState)[K] extends any[] ? K : never
-    }[keyof typeof initialReportState];
-
     const [appState, setAppState] = useState(() => JSON.parse(JSON.stringify(initialReportState)));
     const [reportDate, setReportDate] = useState({
         month: arabicMonths[currentMonthIndex],
         year: new Date().getFullYear().toString(),
     });
-    const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
-    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
+    const [saveStatus, setSaveStatus] = useState('idle');
+    const [openSections, setOpenSections] = useState({
         services: true,
         contracts: true,
         malfunctionsSummary: true,
@@ -1140,16 +975,11 @@ const App: React.FC = () => {
         saved: 'تم الحفظ بنجاح!',
     };
 
-    const toggleSection = (sectionId: string) => {
+    const toggleSection = (sectionId) => {
         setOpenSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
     };
 
-    const handleStateUpdate = <K extends ArrayStateKey>(
-        stateKey: K,
-        index: number,
-        field: keyof (typeof appState)[K][number],
-        value: string | null
-    ) => {
+    const handleStateUpdate = (stateKey, index, field, value) => {
         setAppState(prev => {
             const newState = { ...prev };
             const newArray = [...newState[stateKey]];
@@ -1158,22 +988,16 @@ const App: React.FC = () => {
         });
     };
 
-    const handleAddItem = <K extends ArrayStateKey>(
-        stateKey: K,
-        newItemData: Omit<(typeof appState)[K][number], 'id'>
-    ) => {
+    const handleAddItem = (stateKey, newItemData) => {
         setAppState(prev => {
             const newArray = [...prev[stateKey], { ...newItemData, id: Date.now() }];
             return { ...prev, [stateKey]: newArray };
         });
     };
 
-    const handleDeleteItem = <K extends ArrayStateKey>(
-        stateKey: K,
-        idToDelete: number
-    ) => {
+    const handleDeleteItem = (stateKey, idToDelete) => {
          setAppState(prev => {
-            const oldArray = prev[stateKey] as { id: number }[];
+            const oldArray = prev[stateKey];
             const newArray = oldArray.filter((item) => item.id !== idToDelete);
             return { ...prev, [stateKey]: newArray };
         });
@@ -1182,7 +1006,7 @@ const App: React.FC = () => {
     const handleAddMalfunctionDetailItem = () => {
         setAppState(prev => {
             const newData = [...prev.malfunctionDetailData];
-            const newItem: MalfunctionDetail = {
+            const newItem = {
                 id: Date.now(), location: 'مقر جديد', general: '', furniture: '', decor: '', fireAlarm: '', waterLeak: '', doors: '', lighting: '', flooring: '', ac: '', exterior: '', panels: '', electrical: '', elevators: '',
             };
             newData.splice(newData.length - 2, 0, newItem);
@@ -1190,7 +1014,7 @@ const App: React.FC = () => {
         });
     };
     
-    const handleRequestDistributionUpdate = (rowIndex: number, field: string, value: string) => {
+    const handleRequestDistributionUpdate = (rowIndex, field, value) => {
         setAppState(prev => {
             const newRequestData = [...prev.requestDistributionData];
             const rowToUpdate = { ...newRequestData[rowIndex] };
@@ -1200,6 +1024,7 @@ const App: React.FC = () => {
             } else {
                 rowToUpdate.values = { ...rowToUpdate.values, [field]: value };
                 if (rowIndex === 0 || rowIndex === 1) {
+                    // FIX: Added explicit types to the reduce function's accumulator and value parameters to resolve TypeScript errors.
                     const newTotal = Object.values(rowToUpdate.values)
                                            .reduce((sum: number, val: string) => sum + (parseFloat(val) || 0), 0);
                     rowToUpdate.total = newTotal.toString();
@@ -1211,28 +1036,28 @@ const App: React.FC = () => {
         });
     };
 
-    const handleRequestTableHeaderUpdate = (field: 'metric' | 'total', value: string) => {
+    const handleRequestTableHeaderUpdate = (field, value) => {
         setAppState(prev => ({
             ...prev,
             requestTableHeaders: { ...prev.requestTableHeaders, [field]: value }
         }));
     };
     
-    const handleChannelNameUpdate = (channelId: string, newName: string) => {
+    const handleChannelNameUpdate = (channelId, newName) => {
         setAppState(prev => ({
             ...prev,
             distributionChannels: prev.distributionChannels.map(ch => ch.id === channelId ? { ...ch, name: newName } : ch)
         }));
     };
 
-    const handleRequestColumnWidthUpdate = (columnId: string, width: number) => {
+    const handleRequestColumnWidthUpdate = (columnId, width) => {
         setAppState(prev => ({
             ...prev,
             requestColumnWidths: { ...prev.requestColumnWidths, [columnId]: width }
         }));
     };
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleDateChange = (e) => {
         const { name, value } = e.target;
         setReportDate(prev => ({ ...prev, [name]: value }));
     };
@@ -1264,7 +1089,7 @@ const App: React.FC = () => {
             pagebreak:    { mode: ['css', 'avoid-all'] }
         };
     
-        html2pdf().from(printableArea).set(options).save().then(restoreClasses).catch((err: any) => {
+        html2pdf().from(printableArea).set(options).save().then(restoreClasses).catch((err) => {
             console.error("PDF generation failed:", err);
             restoreClasses();
         });
@@ -1274,9 +1099,9 @@ const App: React.FC = () => {
 
     const handleExportToExcel = () => {
         const wb = XLSX.utils.book_new();
-        const dataToExport: (string|number)[][] = [];
+        const dataToExport = [];
     
-        const addSection = (title: string, headers: (string|number)[], data: (string|number)[][]) => {
+        const addSection = (title, headers, data) => {
             dataToExport.push([title]);
             if (headers.length > 0) {
                 dataToExport.push(headers);
@@ -1318,7 +1143,7 @@ const App: React.FC = () => {
         const receivedRow = appState.requestDistributionData[0];
         const completedRow = appState.requestDistributionData[1];
         const percentageRow = appState.requestDistributionData[2];
-        const calculateExcelPercentage = (receivedStr: string, completedStr: string) => {
+        const calculateExcelPercentage = (receivedStr, completedStr) => {
             const received = parseFloat(receivedStr) || 0;
             const completed = parseFloat(completedStr) || 0;
             return (received === 0) ? '0%' : `${((completed / received) * 100).toFixed(0)}%`;
@@ -1369,115 +1194,114 @@ const App: React.FC = () => {
     };
 
     return (
-        <>
-            <div className="max-w-7xl mx-auto p-4 sm:p-8 bg-gray-100">
-                <div className="printable-area bg-white shadow-lg rounded-lg">
-                    <header className="bg-slate-900 p-6 rounded-t-lg">
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white text-center sm:text-right">تقرير الأداء الشهري - قسم إدارة المرافق</h1>
-                                <p className="no-print text-lg text-gray-300 text-center sm:text-right mt-1">
-                                    تقرير شهر - {reportDate.month} {reportDate.year}
-                                </p>
-                            </div>
-                            <div className="flex items-center flex-wrap justify-center gap-2">
-                                <button onClick={handleNativePrint} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                    طباعة
-                                </button>
-                                 <button onClick={handlePrintToPdf} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                    تحميل PDF
-                                </button>
-                            </div>
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-y-3 no-print">
-                            <div>
-                                <div className="flex items-center flex-wrap gap-x-6 gap-y-3">
-                                    <span className="text-white font-bold text-lg">تحديد فترة التقرير:</span>
-                                    <div className="flex items-center gap-2">
-                                        <label htmlFor="month-select" className="text-white font-semibold">الشهر:</label>
-                                        <select id="month-select" name="month" value={reportDate.month} onChange={handleDateChange} className="bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
-                                            {arabicMonths.map(month => <option key={month} value={month}>{month}</option>)}
-                                        </select>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <label htmlFor="year-select" className="text-white font-semibold">السنة:</label>
-                                        <select id="year-select" name="year" value={reportDate.year} onChange={handleDateChange} className="bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
-                                            {years.map(year => <option key={year} value={year}>{year}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <p className="text-gray-300 text-base mt-2">شركة ساهر للخدمات الذكية</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handleSaveData}
-                                    disabled={saveStatus === 'saving'}
-                                    className={`no-print text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center w-40
-                                        ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4m0 0H9m3 0a2 2 0 012 2v2" />
-                                    </svg>
-                                    {saveButtonText[saveStatus]}
-                                </button>
-                                <button onClick={handleExportToExcel} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h-2m2 0h-4m4 0h-6m4 0H6m6 0h2m4 6l-4-4-4 4m4-4v12" /></svg>
-                                    تصدير Excel
-                                </button>
-                            </div>
-                        </div>
-                        <div className="hidden print:block pt-4 text-center">
-                            <p className="text-xl font-bold">تقرير شهر {reportDate.month} {reportDate.year}</p>
-                        </div>
-                    </header>
+        React.createElement(React.Fragment, null,
+            React.createElement("div", { className: "max-w-7xl mx-auto p-4 sm:p-8 bg-gray-100" },
+                React.createElement("div", { className: "printable-area bg-white shadow-lg rounded-lg" },
+                    React.createElement("header", { className: "bg-slate-900 p-6 rounded-t-lg" },
+                        React.createElement("div", { className: "flex flex-col sm:flex-row justify-between items-center gap-4" },
+                            React.createElement("div", null,
+                                React.createElement("h1", { className: "text-3xl font-bold text-white text-center sm:text-right" }, "تقرير الأداء الشهري - قسم إدارة المرافق"),
+                                React.createElement("p", { className: "no-print text-lg text-gray-300 text-center sm:text-right mt-1" },
+                                    `تقرير شهر - ${reportDate.month} ${reportDate.year}`
+                                )
+                            ),
+                            React.createElement("div", { className: "flex items-center flex-wrap justify-center gap-2" },
+                                React.createElement("button", { onClick: handleNativePrint, className: "no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40" },
+                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" }, React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" })),
+                                    "طباعة"
+                                ),
+                                 React.createElement("button", { onClick: handlePrintToPdf, className: "no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40" },
+                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" }, React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
+                                    "تحميل PDF"
+                                )
+                            )
+                        ),
+                        React.createElement("div", { className: "mt-4 pt-4 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-y-3 no-print" },
+                            React.createElement("div", null,
+                                React.createElement("div", { className: "flex items-center flex-wrap gap-x-6 gap-y-3" },
+                                    React.createElement("span", { className: "text-white font-bold text-lg" }, "تحديد فترة التقرير:"),
+                                    React.createElement("div", { className: "flex items-center gap-2" },
+                                        React.createElement("label", { htmlFor: "month-select", className: "text-white font-semibold" }, "الشهر:"),
+                                        React.createElement("select", { id: "month-select", name: "month", value: reportDate.month, onChange: handleDateChange, className: "bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500" },
+                                            arabicMonths.map(month => React.createElement("option", { key: month, value: month }, month))
+                                        )
+                                    ),
+                                    React.createElement("div", { className: "flex items-center gap-2" },
+                                        React.createElement("label", { htmlFor: "year-select", className: "text-white font-semibold" }, "السنة:"),
+                                        React.createElement("select", { id: "year-select", name: "year", value: reportDate.year, onChange: handleDateChange, className: "bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500" },
+                                            years.map(year => React.createElement("option", { key: year, value: year }, year))
+                                        )
+                                    )
+                                ),
+                                React.createElement("p", { className: "text-gray-300 text-base mt-2" }, "شركة ساهر للخدمات الذكية")
+                            ),
+                            React.createElement("div", { className: "flex items-center gap-2" },
+                                React.createElement("button", {
+                                    onClick: handleSaveData,
+                                    disabled: saveStatus === 'saving',
+                                    className: `no-print text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center w-40 ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`
+                                },
+                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2 },
+                                      React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4m0 0H9m3 0a2 2 0 012 2v2" })
+                                    ),
+                                    saveButtonText[saveStatus]
+                                ),
+                                React.createElement("button", { onClick: handleExportToExcel, className: "no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40" },
+                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" }, React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h-2m2 0h-4m4 0h-6m4 0H6m6 0h2m4 6l-4-4-4 4m4-4v12" })),
+                                    "تصدير Excel"
+                                )
+                            )
+                        ),
+                        React.createElement("div", { className: "hidden print:block pt-4 text-center" },
+                            React.createElement("p", { className: "text-xl font-bold" }, `تقرير شهر ${reportDate.month} ${reportDate.year}`)
+                        )
+                    ),
 
-                    <main className="p-8">
-                        <CollapsibleSection title="ملخص التقرير" isOpen={openSections.services} onToggle={() => toggleSection('services')}>
-                            <ServicesTable data={appState.servicesData} onUpdate={(index, field, value) => handleStateUpdate('servicesData', index, field, value)} onAdd={() => handleAddItem('servicesData', { service: 'خدمة جديدة', received: '', completed: '' })} onDelete={(id) => handleDeleteItem('servicesData', id)} />
-                        </CollapsibleSection>
+                    React.createElement("main", { className: "p-8" },
+                        React.createElement(CollapsibleSection, { title: "ملخص التقرير", isOpen: openSections.services, onToggle: () => toggleSection('services') },
+                            React.createElement(ServicesTable, { data: appState.servicesData, onUpdate: (index, field, value) => handleStateUpdate('servicesData', index, field, value), onAdd: () => handleAddItem('servicesData', { service: 'خدمة جديدة', received: '', completed: '' }), onDelete: (id) => handleDeleteItem('servicesData', id) })
+                        ),
                         
-                        <CollapsibleSection title="العقود والرخص" isOpen={openSections.contracts} onToggle={() => toggleSection('contracts')}>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 components-grid">
-                                <ContractsTable title="عدد العقود الايجارية" data={appState.leaseContractsData} onUpdate={(index, field, value) => handleStateUpdate('leaseContractsData', index, field, value)} />
-                                <ContractsTable title="عدد الرخص التجارية" data={appState.commercialLicensesData} onUpdate={(index, field, value) => handleStateUpdate('commercialLicensesData', index, field, value)} />
-                                <ContractsTable title="عدد عقود الخدمات" data={appState.serviceContractsData} onUpdate={(index, field, value) => handleStateUpdate('serviceContractsData', index, field, value)} />
-                            </div>
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "العقود والرخص", isOpen: openSections.contracts, onToggle: () => toggleSection('contracts') },
+                            React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8 components-grid" },
+                                React.createElement(ContractsTable, { title: "عدد العقود الايجارية", data: appState.leaseContractsData, onUpdate: (index, field, value) => handleStateUpdate('leaseContractsData', index, field, value) }),
+                                React.createElement(ContractsTable, { title: "عدد الرخص التجارية", data: appState.commercialLicensesData, onUpdate: (index, field, value) => handleStateUpdate('commercialLicensesData', index, field, value) }),
+                                React.createElement(ContractsTable, { title: "عدد عقود الخدمات", data: appState.serviceContractsData, onUpdate: (index, field, value) => handleStateUpdate('serviceContractsData', index, field, value) })
+                            )
+                        ),
 
-                        <CollapsibleSection title="خدمات الصيانة" isOpen={openSections.malfunctionsSummary} onToggle={() => toggleSection('malfunctionsSummary')}>
-                            <MalfunctionsSummaryTable data={appState.malfunctionSummaryData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionSummaryData', index, field, value)} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "خدمات الصيانة", isOpen: openSections.malfunctionsSummary, onToggle: () => toggleSection('malfunctionsSummary') },
+                            React.createElement(MalfunctionsSummaryTable, { data: appState.malfunctionSummaryData, onUpdate: (index, field, value) => handleStateUpdate('malfunctionSummaryData', index, field, value) })
+                        ),
 
-                        <CollapsibleSection title="تفصيل الأعطال حسب المقر" isOpen={openSections.malfunctionsDetail} onToggle={() => toggleSection('malfunctionsDetail')}>
-                            <MalfunctionsDetailTable data={appState.malfunctionDetailData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionDetailData', index, field, value)} onAdd={handleAddMalfunctionDetailItem} onDelete={(id) => handleDeleteItem('malfunctionDetailData', id)} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "تفصيل الأعطال حسب المقر", isOpen: openSections.malfunctionsDetail, onToggle: () => toggleSection('malfunctionsDetail') },
+                            React.createElement(MalfunctionsDetailTable, { data: appState.malfunctionDetailData, onUpdate: (index, field, value) => handleStateUpdate('malfunctionDetailData', index, field, value), onAdd: handleAddMalfunctionDetailItem, onDelete: (id) => handleDeleteItem('malfunctionDetailData', id) })
+                        ),
 
-                        <CollapsibleSection title="خدمات الدعم اللوجيستي" isOpen={openSections.logistics} onToggle={() => toggleSection('logistics')}>
-                            <RequestsDistributionTable data={appState.requestDistributionData} channels={appState.distributionChannels} headers={appState.requestTableHeaders} columnWidths={appState.requestColumnWidths} onUpdate={handleRequestDistributionUpdate} onHeaderUpdate={handleRequestTableHeaderUpdate} onChannelNameUpdate={handleChannelNameUpdate} onColumnWidthUpdate={handleRequestColumnWidthUpdate} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "خدمات الدعم اللوجيستي", isOpen: openSections.logistics, onToggle: () => toggleSection('logistics') },
+                            React.createElement(RequestsDistributionTable, { data: appState.requestDistributionData, channels: appState.distributionChannels, headers: appState.requestTableHeaders, columnWidths: appState.requestColumnWidths, onUpdate: handleRequestDistributionUpdate, onHeaderUpdate: handleRequestTableHeaderUpdate, onChannelNameUpdate: handleChannelNameUpdate, onColumnWidthUpdate: handleRequestColumnWidthUpdate })
+                        ),
 
-                        <CollapsibleSection title="طلبات تفعيل البطاقات والتقارير الأمنية" isOpen={openSections.security} onToggle={() => toggleSection('security')}>
-                             <SecurityReportTable data={appState.securityReportData} onUpdate={(index, field, value) => handleStateUpdate('securityReportData', index, field, value)} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "طلبات تفعيل البطاقات والتقارير الأمنية", isOpen: openSections.security, onToggle: () => toggleSection('security') },
+                             React.createElement(SecurityReportTable, { data: appState.securityReportData, onUpdate: (index, field, value) => handleStateUpdate('securityReportData', index, field, value) })
+                        ),
 
-                        <CollapsibleSection title="المهمات المنجزة" isOpen={openSections.tasks} onToggle={() => toggleSection('tasks')}>
-                            <TasksTable data={appState.tasksData} onUpdate={(index, field, value) => handleStateUpdate('tasksData', index, field, value)} onAdd={() => handleAddItem('tasksData', { subject: '', task: '' })} onDelete={(id) => handleDeleteItem('tasksData', id)} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "المهمات المنجزة", isOpen: openSections.tasks, onToggle: () => toggleSection('tasks') },
+                            React.createElement(TasksTable, { data: appState.tasksData, onUpdate: (index, field, value) => handleStateUpdate('tasksData', index, field, value), onAdd: () => handleAddItem('tasksData', { subject: '', task: '' }), onDelete: (id) => handleDeleteItem('tasksData', id) })
+                        ),
 
-                        <CollapsibleSection title="التحديات والتوصيات" isOpen={openSections.challenges} onToggle={() => toggleSection('challenges')}>
-                            <ChallengesTable data={appState.challengesData} onUpdate={(index, field, value) => handleStateUpdate('challengesData', index, field, value)} onAdd={() => handleAddItem('challengesData', { challenges: '', update: '', recommendation: '' })} onDelete={(id) => handleDeleteItem('challengesData', id)} />
-                        </CollapsibleSection>
+                        React.createElement(CollapsibleSection, { title: "التحديات والتوصيات", isOpen: openSections.challenges, onToggle: () => toggleSection('challenges') },
+                            React.createElement(ChallengesTable, { data: appState.challengesData, onUpdate: (index, field, value) => handleStateUpdate('challengesData', index, field, value), onAdd: () => handleAddItem('challengesData', { challenges: '', update: '', recommendation: '' }), onDelete: (id) => handleDeleteItem('challengesData', id) })
+                        ),
 
-                        <CollapsibleSection title="التوقيعات والاعتماد" isOpen={openSections.approval} onToggle={() => toggleSection('approval')}>
-                            <ApprovalSection data={appState.approvalData} onUpdate={(index, field, value) => handleStateUpdate('approvalData', index, field, value)} />
-                        </CollapsibleSection>
-                    </main>
-                </div>
-            </div>
-            <Footer />
-        </>
+                        React.createElement(CollapsibleSection, { title: "التوقيعات والاعتماد", isOpen: openSections.approval, onToggle: () => toggleSection('approval') },
+                            React.createElement(ApprovalSection, { data: appState.approvalData, onUpdate: (index, field, value) => handleStateUpdate('approvalData', index, field, value) })
+                        )
+                    )
+                )
+            ),
+            React.createElement(Footer, null)
+        )
     );
 };
 
@@ -1489,7 +1313,7 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  React.createElement(React.StrictMode, null,
+    React.createElement(App, null)
+  )
 );
