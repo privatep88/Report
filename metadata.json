@@ -1,0 +1,5 @@
+{
+  "name": "Monthly Facilities Report Generator",
+  "description": "A web application to generate a clear and concise monthly report for senior management, based on the provided template. The application is in Arabic and supports data entry, allowing for the creation of reports that are easy to view and present.",
+  "requestFramePermissions": []
+}

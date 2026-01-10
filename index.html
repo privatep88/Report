@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تقرير شهري</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+      body {
+        font-family: 'Tajawal', sans-serif;
+      }
+      @media print {
+        /* --- Page Setup --- */
+        @page {
+          size: A3 landscape;
+          margin: 0;
+        }
+
+        /* --- General Print Resets & Single Page Forcing --- */
+        html, body {
+          height: 100%;
+          width: 100%;
+          overflow: hidden; /* Hide anything that overflows the single page */
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          font-size: 8pt; /* Reduce base font size to fit more content */
+          background-color: #fff !important;
+        }
+
+        /* --- Visibility Control --- */
+        body * {
+          visibility: hidden;
+        }
+        .printable-area, .printable-area * {
+          visibility: visible;
+        }
+        .no-print {
+          display: none !important;
+        }
+        
+        /* --- Main Layout for Single Page --- */
+        .printable-area {
+          width: 100%;
+          height: 100%;
+          box-shadow: none !important;
+          border: none !important;
+          margin: 0 !important;
+          padding: 1cm !important; 
+          box-sizing: border-box !important;
+          overflow: hidden;
+        }
+        
+        /* --- Remove All Page Break Rules --- */
+        section, table, tr, .approval-section {
+            page-break-before: auto !important;
+            page-break-after: auto !important;
+            page-break-inside: auto !important;
+        }
+
+        /* --- Text & Color --- */
+        h1, h2, h3, p, span, th, td, input {
+          color: black !important;
+        }
+
+        /* --- Header & Titles (Compact) --- */
+        .printable-area header {
+            background-color: transparent !important;
+            padding: 0 !important;
+            border-bottom: 1px solid #ccc !important;
+            margin-bottom: 0.5rem !important;
+        }
+        h1 {
+            font-size: 18pt !important;
+            margin-bottom: 0.25rem !important;
+        }
+        header .text-xl.font-bold {
+            font-size: 12pt !important;
+        }
+
+        /* Section Titles (Compact) */
+        .collapsible-section h2 {
+            font-size: 12pt !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 2px !important;
+            border-bottom: 1px solid #666 !important;
+        }
+        
+        section {
+            margin-bottom: 0.5rem !important; /* Reduce space between sections */
+        }
+
+        /* --- Tables (Compact) --- */
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+        thead {
+          display: table-header-group; 
+          background-color: #f3f4f6 !important;
+        }
+        th, td {
+          border: 1px solid #b0b0b0 !important;
+          padding: 3px 5px !important; /* Reduced padding */
+          text-align: center !important;
+          vertical-align: middle !important;
+        }
+        th {
+          font-weight: bold !important;
+        }
+        
+        /* --- Input Fields --- */
+        .printable-area input {
+          border: none !important;
+          background-color: transparent !important;
+          box-shadow: none !important;
+          padding: 2px !important;
+          margin: 0;
+          width: 100%;
+          height: 100%;
+          font-size: inherit !important;
+          text-align: center !important;
+        }
+
+        /* --- Specific Layout Adjustments --- */
+        .malfunction-detail-table {
+            font-size: 7pt !important;
+        }
+        .malfunction-detail-table th,
+        .malfunction-detail-table td {
+            padding: 2px !important;
+        }
+        .overflow-x-auto {
+          overflow: hidden !important;
+        }
+        .components-grid {
+            display: flex !important;
+            gap: 0.5rem !important;
+        }
+        .components-grid > div {
+            flex: 1;
+        }
+
+        /* --- Signature Section --- */
+        .approval-section {
+            padding-top: 1rem !important;
+            border-top: 1px solid #ccc !important;
+        }
+        .printable-area .approval-section .signature-input {
+            text-align: right !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-100">
+    <div id="root"></div>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" data-type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
