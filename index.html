@@ -17,18 +17,21 @@
         /* --- Page Setup --- */
         @page {
           size: A3 landscape;
-          margin: 0;
+          margin: 1cm; /* Add sensible margins */
         }
 
-        /* --- General Print Resets & Single Page Forcing --- */
-        html, body {
-          height: 100%;
-          width: 100%;
-          overflow: hidden; /* Hide anything that overflows the single page */
+        /* --- General Print Resets --- */
+        body {
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
-          font-size: 8pt; /* Reduce base font size to fit more content */
+          font-size: 9pt;
           background-color: #fff !important;
+        }
+        
+        html, body {
+            width: 100%;
+            height: auto;
+            overflow: visible; /* CRITICAL: Allow content to flow to multiple pages */
         }
 
         /* --- Visibility Control --- */
@@ -42,70 +45,66 @@
           display: none !important;
         }
         
-        /* --- Main Layout for Single Page --- */
+        /* --- Main Layout --- */
         .printable-area {
           width: 100%;
-          height: 100%;
           box-shadow: none !important;
           border: none !important;
           margin: 0 !important;
-          padding: 1cm !important; 
-          box-sizing: border-box !important;
-          overflow: hidden;
+          padding: 0 !important;
+          overflow: visible !important;
         }
         
-        /* --- Remove All Page Break Rules --- */
-        section, table, tr, .approval-section {
-            page-break-before: auto !important;
-            page-break-after: auto !important;
-            page-break-inside: auto !important;
+        /* --- Page Break Control --- */
+        section {
+            page-break-inside: avoid; /* Try to keep sections from breaking in the middle */
+            margin-bottom: 1rem !important;
+        }
+        .approval-section {
+            page-break-before: always !important; /* Start signatures on a new page */
+            padding-top: 2rem !important;
         }
 
-        /* --- Text & Color --- */
+        /* --- Typography & Headers --- */
         h1, h2, h3, p, span, th, td, input {
-          color: black !important;
+          color: #000 !important;
         }
-
-        /* --- Header & Titles (Compact) --- */
         .printable-area header {
             background-color: transparent !important;
-            padding: 0 !important;
-            border-bottom: 1px solid #ccc !important;
-            margin-bottom: 0.5rem !important;
+            padding: 0 0 1rem 0 !important;
+            border-bottom: 2px solid #333 !important;
+            margin-bottom: 1rem !important;
         }
         h1 {
-            font-size: 18pt !important;
-            margin-bottom: 0.25rem !important;
-        }
-        header .text-xl.font-bold {
-            font-size: 12pt !important;
-        }
-
-        /* Section Titles (Compact) */
-        .collapsible-section h2 {
-            font-size: 12pt !important;
-            margin-top: 0.75rem !important;
+            font-size: 22pt !important;
             margin-bottom: 0.5rem !important;
-            padding-bottom: 2px !important;
-            border-bottom: 1px solid #666 !important;
+        }
+        .collapsible-section h2 {
+            font-size: 14pt !important;
+            margin-top: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 4px !important;
+            border-bottom: 1px solid #999 !important;
+            page-break-after: avoid; /* Don't break right after a title */
         }
         
-        section {
-            margin-bottom: 0.5rem !important; /* Reduce space between sections */
-        }
-
-        /* --- Tables (Compact) --- */
+        /* --- Tables (Compact & Clean) --- */
         table {
           width: 100% !important;
           border-collapse: collapse !important;
+          page-break-inside: auto;
         }
         thead {
-          display: table-header-group; 
-          background-color: #f3f4f6 !important;
+          display: table-header-group; /* CRITICAL: Repeat headers on each page */
+          background-color: #e5e7eb !important;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
         th, td {
-          border: 1px solid #b0b0b0 !important;
-          padding: 3px 5px !important; /* Reduced padding */
+          border: 1px solid #ccc !important;
+          padding: 4px 6px !important; /* Compact padding */
           text-align: center !important;
           vertical-align: middle !important;
         }
@@ -113,45 +112,43 @@
           font-weight: bold !important;
         }
         
-        /* --- Input Fields --- */
+        /* --- Input Fields as Static Text --- */
         .printable-area input {
           border: none !important;
           background-color: transparent !important;
           box-shadow: none !important;
-          padding: 2px !important;
+          padding: 0 !important;
           margin: 0;
           width: 100%;
           height: 100%;
           font-size: inherit !important;
           text-align: center !important;
         }
+        .printable-area .signature-input {
+            text-align: right !important;
+            border-bottom: 1px solid #999 !important;
+        }
+        .printable-area .approval-section .border-dashed {
+            border: 1px dashed #999 !important;
+        }
 
         /* --- Specific Layout Adjustments --- */
         .malfunction-detail-table {
-            font-size: 7pt !important;
+            font-size: 8pt !important;
         }
         .malfunction-detail-table th,
         .malfunction-detail-table td {
-            padding: 2px !important;
+            padding: 3px !important;
         }
         .overflow-x-auto {
           overflow: hidden !important;
         }
         .components-grid {
             display: flex !important;
-            gap: 0.5rem !important;
+            gap: 1rem !important;
         }
         .components-grid > div {
             flex: 1;
-        }
-
-        /* --- Signature Section --- */
-        .approval-section {
-            padding-top: 1rem !important;
-            border-top: 1px solid #ccc !important;
-        }
-        .printable-area .approval-section .signature-input {
-            text-align: right !important;
         }
       }
     </style>
