@@ -849,7 +849,7 @@ const Footer = () => {
                     )
                 ),
                 React.createElement("div", { className: "mt-8 pt-8 border-t border-slate-800 flex flex-col items-center text-sm text-gray-400 pb-8" },
-                    React.createElement("p", null, " اعداد وتصميم / خالد الجفري"),
+                    React.createElement("p", { className: "border border-[#12244d] px-4 py-2 rounded-lg inline-block" }, " اعداد وتصميم / خالد الجفري"),
                     React.createElement("p", { className: "mt-2" }, `جميع الحقوق محفوظة لشركة © ${new Date().getFullYear()} SAHER FOR SMART SERVICES`)
                 )
             )
