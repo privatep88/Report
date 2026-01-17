@@ -806,7 +806,7 @@ const ApprovalSection = ({ data, onUpdate }) => {
 //--- Component: Footer.tsx ---
 const Footer = () => {
     return (
-        React.createElement("footer", { className: "bg-slate-900 text-gray-300 no-print" },
+        React.createElement("footer", { className: "bg-slate-900 text-gray-300 no-print border-t-4 border-[#eab308]" },
             React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
                 React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-8" },
                     React.createElement("div", { className: "lg:col-span-2" },
@@ -1214,12 +1214,12 @@ const App = () => {
         React.createElement(React.Fragment, null,
             React.createElement("div", { className: "max-w-7xl mx-auto p-4 sm:p-8 bg-gray-100" },
                 React.createElement("div", { className: "printable-area bg-white shadow-lg rounded-lg" },
-                    React.createElement("header", { className: "bg-slate-900 p-6 rounded-t-lg" },
+                    React.createElement("header", { className: "bg-slate-900 p-6 rounded-t-lg border-b-4 border-[#eab308]" },
                         React.createElement("div", { className: "flex flex-col sm:flex-row justify-between items-center gap-4" },
                              React.createElement("div", null,
                                 React.createElement("h1", { className: "text-3xl font-bold text-white text-center sm:text-right" },
                                     "تقرير الأداء الشهري - قسم إدارة المرافق",
-                                    React.createElement("span", { className: "no-print block text-lg font-normal text-gray-300 mt-1" }, `تقرير شهر - ${reportDate.month} ${reportDate.year}`)
+                                    React.createElement("span", { className: "no-print block text-lg font-normal text-gray-300 mt-2" }, `تقرير شهر - ${reportDate.month} ${reportDate.year}`)
                                 )
                             ),
                             React.createElement("div", { className: "flex items-center flex-wrap justify-center gap-2" },
@@ -1266,7 +1266,7 @@ const App = () => {
                                     saveButtonText[saveStatus]
                                 ),
                                 React.createElement("button", { onClick: handleExportToExcel, className: "no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40" },
-                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" }, React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h-2m2 0h-4m4 0h-6m4 0H6m6 0h2m4 6l-4-4-4 4m4-4v12" })),
+                                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5 me-2", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: "2" }, React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
                                     "تصدير Excel"
                                 )
                             )
