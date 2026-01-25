@@ -12,7 +12,7 @@ import { ApprovalSection } from './components/ApprovalSection.tsx';
 import { Footer } from './components/Footer.tsx';
 import { CollapsibleSection } from './components/CollapsibleSection.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
-import type { MalfunctionDetail, SignatureData } from './types.ts';
+import type { MalfunctionDetail } from './types.ts';
 import { initialReportState } from './constants.ts';
 
 declare const html2pdf: any;
@@ -37,7 +37,7 @@ const App: React.FC = () => {
         year: new Date().getFullYear().toString(),
     });
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'report'>('dashboard');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'report'>('report');
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         services: true,
         contracts: true,
@@ -201,8 +201,7 @@ const App: React.FC = () => {
     
         const header = printableArea.querySelector('header');
         const main = printableArea.querySelector('main');
-        const tabs = document.querySelector('.tabs-container');
-        if (tabs) tabs.classList.add('no-print');
+        // No separate tabs container to hide anymore
     
         const headerOriginalClasses = header?.className;
         const mainOriginalClasses = main?.className;
@@ -213,7 +212,6 @@ const App: React.FC = () => {
         const restoreClasses = () => {
             if (header && headerOriginalClasses) header.className = headerOriginalClasses;
             if (main && mainOriginalClasses) main.className = mainOriginalClasses;
-            if (tabs) tabs.classList.remove('no-print');
         };
     
         const options = {
@@ -338,92 +336,116 @@ const App: React.FC = () => {
     return (
         <>
             <div className="max-w-7xl mx-auto p-4 sm:p-8 min-h-screen" style={islamicPatternStyle}>
-                <div className="printable-area bg-white shadow-lg rounded-lg">
-                    <header className="bg-slate-900 p-6 rounded-t-lg border-b-4 border-[#eab308]">
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white text-center sm:text-right">تقرير الأداء الشهري - قسم إدارة المرافق</h1>
-                                <p className="no-print text-lg text-gray-300 text-center sm:text-right mt-1">
-                                    تقرير شهر - {reportDate.month} {reportDate.year}
-                                </p>
-                            </div>
-                            <div className="flex items-center flex-wrap justify-center gap-2">
-                                <button onClick={handleNativePrint} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                    طباعة
-                                </button>
-                                 <button onClick={handlePrintToPdf} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                    تحميل PDF
-                                </button>
+                <div className="printable-area bg-white shadow-lg rounded-lg overflow-hidden">
+                    
+                    {/* Main Header */}
+                    <header className="bg-slate-900 h-auto sm:h-32 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between px-6 py-4 rounded-t-lg border-b-4 border-[#eab308] no-print-padding">
+                        {/* Background Pattern */}
+                        <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+
+                        {/* Right Side: Date (Visual Right in RTL) */}
+                        <div className="z-10 flex items-center mb-4 sm:mb-0 order-3 sm:order-1">
+                            <div className="border border-slate-600 bg-slate-800/80 rounded-lg px-4 py-2 flex items-center gap-3 shadow-sm">
+                                <span className="text-yellow-500 font-bold text-xl">{reportDate.year}</span>
+                                <div className="h-5 w-px bg-slate-600"></div>
+                                <span className="text-white font-medium text-lg">{reportDate.month}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
                             </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-y-3 no-print">
-                            <div>
-                                <div className="flex items-center flex-wrap gap-x-6 gap-y-3">
-                                    <span className="text-white font-bold text-lg">تحديد فترة التقرير:</span>
-                                    <div className="flex items-center gap-2">
-                                        <label htmlFor="month-select" className="text-white font-semibold">الشهر:</label>
-                                        <select id="month-select" name="month" value={reportDate.month} onChange={handleDateChange} className="bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
-                                            {arabicMonths.map(month => <option key={month} value={month}>{month}</option>)}
-                                        </select>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <label htmlFor="year-select" className="text-white font-semibold">السنة:</label>
-                                        <select id="year-select" name="year" value={reportDate.year} onChange={handleDateChange} className="bg-slate-800 text-white border border-slate-600 rounded-md px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
-                                            {years.map(year => <option key={year} value={year}>{year}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <p className="text-gray-300 text-base mt-2">شركة ساهر للخدمات الذكية</p>
+
+                        {/* Center: Title */}
+                        <div className="z-10 text-center flex flex-col items-center mb-4 sm:mb-0 order-1 sm:order-2">
+                            <div className="inline-block bg-[#1e293b] border border-slate-600 rounded-full px-6 py-1 mb-2">
+                                <span className="text-[#eab308] text-xs sm:text-sm font-bold tracking-wide">إدارة الخدمات العامة / قسم إدارة المرافق</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handleSaveData}
-                                    disabled={saveStatus === 'saving'}
-                                    className={`no-print text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center w-40
-                                        ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4m0 0H9m3 0a2 2 0 012 2v2" />
-                                    </svg>
-                                    {saveButtonText[saveStatus]}
-                                </button>
-                                <button onClick={handleExportToExcel} className="no-print bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center w-40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h-2m2 0h-4m4 0h-6m4 0H6m6 0h2m4 6l-4-4-4 4m4-4v12" /></svg>
-                                    تصدير Excel
-                                </button>
-                            </div>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-wide">تقرير الأداء الشهري</h1>
                         </div>
-                        <div className="hidden print:block pt-4 text-center">
-                            <p className="text-xl font-bold">تقرير شهر {reportDate.month} {reportDate.year}</p>
+
+                        {/* Left Side: Logo (Visual Left in RTL) */}
+                        <div className="z-10 flex items-center gap-3 order-2 sm:order-3">
+                            <div className="text-left">
+                                <h1 className="text-3xl font-black text-white tracking-tight leading-none font-sans">SAHER</h1>
+                                <p className="text-[9px] text-gray-400 tracking-[0.25em] uppercase font-semibold text-right">FOR SMART SERVICE</p>
+                            </div>
+                            <div className="relative bg-blue-600 h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <span className="text-white font-black text-2xl sm:text-3xl italic font-sans pr-1">S</span>
+                                <span className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-yellow-400 rounded-full border-2 border-slate-900"></span>
+                            </div>
                         </div>
                     </header>
 
-                     {/* Tab Navigation */}
-                     <div className="tabs-container bg-white sticky top-0 z-10 shadow-sm mb-6 border-b border-gray-200 flex justify-center sm:justify-start no-print">
-                        <button
-                            onClick={() => setActiveTab('dashboard')}
-                            className={`px-8 py-4 font-bold text-lg transition-colors duration-200 flex items-center gap-2 outline-none focus:outline-none ${
-                                activeTab === 'dashboard' 
-                                ? 'text-yellow-600 border-b-4 border-yellow-500 bg-yellow-50/50' 
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 border-b-4 border-transparent'
-                            }`}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                            لوحة المعلومات والإحصائيات
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('report')}
-                            className={`px-8 py-4 font-bold text-lg transition-colors duration-200 flex items-center gap-2 outline-none focus:outline-none ${
-                                activeTab === 'report' 
-                                ? 'text-yellow-600 border-b-4 border-yellow-500 bg-yellow-50/50' 
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 border-b-4 border-transparent'
-                            }`}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            التقرير التفصيلي
-                        </button>
+                    {/* Toolbar Section (Below Header) */}
+                    <div className="bg-gray-50 border-b border-gray-200 p-4 flex flex-col xl:flex-row items-center justify-between gap-4 no-print">
+                         <div className="flex items-center gap-4 bg-white p-2 rounded-lg border border-gray-200 shadow-sm flex-wrap justify-center">
+                            {/* Dashboard / Report Tabs */}
+                            <div className="flex p-1 bg-gray-100 rounded-lg">
+                                <button
+                                    onClick={() => setActiveTab('report')}
+                                    className={`py-2 px-6 rounded-md transition-all duration-200 text-sm font-bold flex items-center gap-2 ${
+                                        activeTab === 'report' 
+                                        ? 'bg-[#334155] text-white shadow-sm' 
+                                        : 'text-gray-500 hover:text-slate-700 hover:bg-gray-200/50'
+                                    }`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${activeTab === 'report' ? 'text-[#eab308]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    التقرير التفصيلي
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('dashboard')}
+                                    className={`py-2 px-6 rounded-md transition-all duration-200 text-sm font-bold flex items-center gap-2 ${
+                                        activeTab === 'dashboard' 
+                                        ? 'bg-[#334155] text-white shadow-sm' 
+                                        : 'text-gray-500 hover:text-slate-700 hover:bg-gray-200/50'
+                                    }`}
+                                >
+                                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${activeTab === 'dashboard' ? 'text-[#eab308]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                    لوحة المعلومات
+                                </button>
+                            </div>
+
+                            <div className="w-px h-8 bg-gray-200 hidden sm:block"></div>
+
+                            {/* Date Selection */}
+                            <div className="flex items-center gap-2">
+                                <label htmlFor="month-select" className="text-gray-600 font-medium text-sm">الشهر:</label>
+                                <select id="month-select" name="month" value={reportDate.month} onChange={handleDateChange} className="bg-gray-50 text-gray-800 border-gray-200 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-[#eab308] focus:border-[#eab308]">
+                                    {arabicMonths.map(month => <option key={month} value={month}>{month}</option>)}
+                                </select>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <label htmlFor="year-select" className="text-gray-600 font-medium text-sm">السنة:</label>
+                                <select id="year-select" name="year" value={reportDate.year} onChange={handleDateChange} className="bg-gray-50 text-gray-800 border-gray-200 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-[#eab308] focus:border-[#eab308]">
+                                    {years.map(year => <option key={year} value={year}>{year}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2">
+                             <button
+                                onClick={handleSaveData}
+                                disabled={saveStatus === 'saving'}
+                                className={`text-white py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center text-sm font-bold shadow-sm hover:shadow-md min-w-[120px]
+                                    ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-[#eab308] hover:bg-yellow-600 text-slate-900'}`}
+                            >
+                                {saveButtonText[saveStatus]}
+                            </button>
+                             <div className="h-8 w-px bg-gray-300 mx-1"></div>
+                             <button onClick={handleNativePrint} className="bg-slate-700 text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-all duration-200 flex items-center text-sm font-medium shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                طباعة
+                            </button>
+                             <button onClick={handlePrintToPdf} className="bg-slate-700 text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-all duration-200 flex items-center text-sm font-medium shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                PDF
+                            </button>
+                            <button onClick={handleExportToExcel} className="bg-slate-700 text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-all duration-200 flex items-center text-sm font-medium shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                Excel
+                            </button>
+                        </div>
                     </div>
 
                     <main className="p-8">
