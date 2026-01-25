@@ -11,6 +11,7 @@ import { ChallengesTable } from './components/ChallengesTable.tsx';
 import { ApprovalSection } from './components/ApprovalSection.tsx';
 import { Footer } from './components/Footer.tsx';
 import { CollapsibleSection } from './components/CollapsibleSection.tsx';
+import { Dashboard } from './components/Dashboard.tsx';
 import type { MalfunctionDetail, SignatureData } from './types.ts';
 import { initialReportState } from './constants.ts';
 
@@ -36,6 +37,7 @@ const App: React.FC = () => {
         year: new Date().getFullYear().toString(),
     });
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'report'>('dashboard');
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         services: true,
         contracts: true,
@@ -199,6 +201,8 @@ const App: React.FC = () => {
     
         const header = printableArea.querySelector('header');
         const main = printableArea.querySelector('main');
+        const tabs = document.querySelector('.tabs-container');
+        if (tabs) tabs.classList.add('no-print');
     
         const headerOriginalClasses = header?.className;
         const mainOriginalClasses = main?.className;
@@ -209,6 +213,7 @@ const App: React.FC = () => {
         const restoreClasses = () => {
             if (header && headerOriginalClasses) header.className = headerOriginalClasses;
             if (main && mainOriginalClasses) main.className = mainOriginalClasses;
+            if (tabs) tabs.classList.remove('no-print');
         };
     
         const options = {
@@ -324,11 +329,17 @@ const App: React.FC = () => {
         XLSX.writeFile(wb, `تقرير-شهر-${reportDate.month}-${reportDate.year}.xlsx`);
     };
 
+    // Modern Islamic Geometric Pattern - Subtle Slate Gray
+    const islamicPatternStyle = {
+        backgroundColor: '#f3f4f6', // fallback/base color
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.04'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+    };
+
     return (
         <>
-            <div className="max-w-7xl mx-auto p-4 sm:p-8 bg-gray-100">
+            <div className="max-w-7xl mx-auto p-4 sm:p-8 min-h-screen" style={islamicPatternStyle}>
                 <div className="printable-area bg-white shadow-lg rounded-lg">
-                    <header className="bg-slate-900 p-6 rounded-t-lg">
+                    <header className="bg-slate-900 p-6 rounded-t-lg border-b-4 border-[#eab308]">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                             <div>
                                 <h1 className="text-3xl font-bold text-white text-center sm:text-right">تقرير الأداء الشهري - قسم إدارة المرافق</h1>
@@ -389,46 +400,80 @@ const App: React.FC = () => {
                         </div>
                     </header>
 
+                     {/* Tab Navigation */}
+                     <div className="tabs-container bg-white sticky top-0 z-10 shadow-sm mb-6 border-b border-gray-200 flex justify-center sm:justify-start no-print">
+                        <button
+                            onClick={() => setActiveTab('dashboard')}
+                            className={`px-8 py-4 font-bold text-lg transition-colors duration-200 flex items-center gap-2 outline-none focus:outline-none ${
+                                activeTab === 'dashboard' 
+                                ? 'text-yellow-600 border-b-4 border-yellow-500 bg-yellow-50/50' 
+                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 border-b-4 border-transparent'
+                            }`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                            لوحة المعلومات والإحصائيات
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('report')}
+                            className={`px-8 py-4 font-bold text-lg transition-colors duration-200 flex items-center gap-2 outline-none focus:outline-none ${
+                                activeTab === 'report' 
+                                ? 'text-yellow-600 border-b-4 border-yellow-500 bg-yellow-50/50' 
+                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 border-b-4 border-transparent'
+                            }`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            التقرير التفصيلي
+                        </button>
+                    </div>
+
                     <main className="p-8">
-                        <CollapsibleSection title="ملخص التقرير" isOpen={openSections.services} onToggle={() => toggleSection('services')}>
-                            <ServicesTable data={appState.servicesData} onUpdate={(index, field, value) => handleStateUpdate('servicesData', index, field, value)} onAdd={() => handleAddItem('servicesData', { service: 'خدمة جديدة', received: '', completed: '' })} onDelete={(id) => handleDeleteItem('servicesData', id)} />
-                        </CollapsibleSection>
-                        
-                        <CollapsibleSection title="العقود والرخص" isOpen={openSections.contracts} onToggle={() => toggleSection('contracts')}>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 components-grid">
-                                <ContractsTable title="عدد العقود الايجارية" data={appState.leaseContractsData} onUpdate={(index, field, value) => handleStateUpdate('leaseContractsData', index, field, value)} />
-                                <ContractsTable title="عدد الرخص التجارية" data={appState.commercialLicensesData} onUpdate={(index, field, value) => handleStateUpdate('commercialLicensesData', index, field, value)} />
-                                <ContractsTable title="عدد عقود الخدمات" data={appState.serviceContractsData} onUpdate={(index, field, value) => handleStateUpdate('serviceContractsData', index, field, value)} />
+                        {activeTab === 'dashboard' ? (
+                             <div className="animate-fadeIn">
+                                <Dashboard data={appState} />
+                             </div>
+                        ) : (
+                            <div className="animate-fadeIn space-y-2">
+                                <CollapsibleSection title="ملخص التقرير" isOpen={openSections.services} onToggle={() => toggleSection('services')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}>
+                                    <ServicesTable data={appState.servicesData} onUpdate={(index, field, value) => handleStateUpdate('servicesData', index, field, value)} onAdd={() => handleAddItem('servicesData', { service: 'خدمة جديدة', received: '', completed: '' })} onDelete={(id) => handleDeleteItem('servicesData', id)} />
+                                </CollapsibleSection>
+                                
+                                <CollapsibleSection title="العقود والرخص" isOpen={openSections.contracts} onToggle={() => toggleSection('contracts')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>}>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 components-grid">
+                                        <ContractsTable title="عدد العقود الايجارية" data={appState.leaseContractsData} onUpdate={(index, field, value) => handleStateUpdate('leaseContractsData', index, field, value)} />
+                                        <ContractsTable title="عدد الرخص التجارية" data={appState.commercialLicensesData} onUpdate={(index, field, value) => handleStateUpdate('commercialLicensesData', index, field, value)} />
+                                        <ContractsTable title="عدد عقود الخدمات" data={appState.serviceContractsData} onUpdate={(index, field, value) => handleStateUpdate('serviceContractsData', index, field, value)} />
+                                    </div>
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="خدمات الصيانة" isOpen={openSections.malfunctionsSummary} onToggle={() => toggleSection('malfunctionsSummary')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.472-2.472a3.375 3.375 0 000-4.773L6.75 3.75l-2.472 2.472a3.375 3.375 0 000 4.773l5.143 5.143z" /></svg>}>
+                                    <MalfunctionsSummaryTable data={appState.malfunctionSummaryData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionSummaryData', index, field, value)} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="تفصيل الأعطال حسب المقر" isOpen={openSections.malfunctionsDetail} onToggle={() => toggleSection('malfunctionsDetail')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>}>
+                                    <MalfunctionsDetailTable data={appState.malfunctionDetailData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionDetailData', index, field, value)} onAdd={handleAddMalfunctionDetailItem} onDelete={(id) => handleDeleteItem('malfunctionDetailData', id)} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="خدمات الدعم اللوجيستي" isOpen={openSections.logistics} onToggle={() => toggleSection('logistics')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75L3 7.5M12 2.25v9.75m-9 5.25v-9l9-5.25" /></svg>}>
+                                    <RequestsDistributionTable data={appState.requestDistributionData} channels={appState.distributionChannels} headers={appState.requestTableHeaders} columnWidths={appState.requestColumnWidths} onUpdate={handleRequestDistributionUpdate} onHeaderUpdate={handleRequestTableHeaderUpdate} onChannelNameUpdate={handleChannelNameUpdate} onColumnWidthUpdate={handleRequestColumnWidthUpdate} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="طلبات تفعيل البطاقات والتقارير الأمنية" isOpen={openSections.security} onToggle={() => toggleSection('security')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036V6.75" /></svg>}>
+                                     <SecurityReportTable data={appState.securityReportData} onUpdate={(index, field, value) => handleStateUpdate('securityReportData', index, field, value)} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="المهمات المنجزة" isOpen={openSections.tasks} onToggle={() => toggleSection('tasks')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
+                                    <TasksTable data={appState.tasksData} onUpdate={(index, field, value) => handleStateUpdate('tasksData', index, field, value)} onAdd={() => handleAddItem('tasksData', { subject: '', task: '' })} onDelete={(id) => handleDeleteItem('tasksData', id)} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="التحديات والتوصيات" isOpen={openSections.challenges} onToggle={() => toggleSection('challenges')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a3 3 0 006 0 3 3 0 00-6 0zm0 0a3 3 0 00-6 0 3 3 0 006 0zm0 0V6.75" /></svg>}>
+                                    <ChallengesTable data={appState.challengesData} onUpdate={(index, field, value) => handleStateUpdate('challengesData', index, field, value)} onAdd={() => handleAddItem('challengesData', { challenges: '', update: '', recommendation: '' })} onDelete={(id) => handleDeleteItem('challengesData', id)} />
+                                </CollapsibleSection>
+
+                                <CollapsibleSection title="التوقيعات والاعتماد" isOpen={openSections.approval} onToggle={() => toggleSection('approval')} icon={<svg className="h-7 w-7 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>}>
+                                    <ApprovalSection data={appState.approvalData} onUpdate={(index, field, value) => handleStateUpdate('approvalData', index, field, value)} />
+                                </CollapsibleSection>
                             </div>
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="خدمات الصيانة" isOpen={openSections.malfunctionsSummary} onToggle={() => toggleSection('malfunctionsSummary')}>
-                            <MalfunctionsSummaryTable data={appState.malfunctionSummaryData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionSummaryData', index, field, value)} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="تفصيل الأعطال حسب المقر" isOpen={openSections.malfunctionsDetail} onToggle={() => toggleSection('malfunctionsDetail')}>
-                            <MalfunctionsDetailTable data={appState.malfunctionDetailData} onUpdate={(index, field, value) => handleStateUpdate('malfunctionDetailData', index, field, value)} onAdd={handleAddMalfunctionDetailItem} onDelete={(id) => handleDeleteItem('malfunctionDetailData', id)} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="خدمات الدعم اللوجيستي" isOpen={openSections.logistics} onToggle={() => toggleSection('logistics')}>
-                            <RequestsDistributionTable data={appState.requestDistributionData} channels={appState.distributionChannels} headers={appState.requestTableHeaders} columnWidths={appState.requestColumnWidths} onUpdate={handleRequestDistributionUpdate} onHeaderUpdate={handleRequestTableHeaderUpdate} onChannelNameUpdate={handleChannelNameUpdate} onColumnWidthUpdate={handleRequestColumnWidthUpdate} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="طلبات تفعيل البطاقات والتقارير الأمنية" isOpen={openSections.security} onToggle={() => toggleSection('security')}>
-                             <SecurityReportTable data={appState.securityReportData} onUpdate={(index, field, value) => handleStateUpdate('securityReportData', index, field, value)} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="المهمات المنجزة" isOpen={openSections.tasks} onToggle={() => toggleSection('tasks')}>
-                            <TasksTable data={appState.tasksData} onUpdate={(index, field, value) => handleStateUpdate('tasksData', index, field, value)} onAdd={() => handleAddItem('tasksData', { subject: '', task: '' })} onDelete={(id) => handleDeleteItem('tasksData', id)} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="التحديات والتوصيات" isOpen={openSections.challenges} onToggle={() => toggleSection('challenges')}>
-                            <ChallengesTable data={appState.challengesData} onUpdate={(index, field, value) => handleStateUpdate('challengesData', index, field, value)} onAdd={() => handleAddItem('challengesData', { challenges: '', update: '', recommendation: '' })} onDelete={(id) => handleDeleteItem('challengesData', id)} />
-                        </CollapsibleSection>
-
-                        <CollapsibleSection title="التوقيعات والاعتماد" isOpen={openSections.approval} onToggle={() => toggleSection('approval')}>
-                            <ApprovalSection data={appState.approvalData} onUpdate={(index, field, value) => handleStateUpdate('approvalData', index, field, value)} />
-                        </CollapsibleSection>
+                        )}
                     </main>
                 </div>
             </div>
