@@ -428,8 +428,11 @@ const App: React.FC = () => {
                                 onClick={handleSaveData}
                                 disabled={saveStatus === 'saving'}
                                 className={`text-white py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center text-sm font-bold shadow-sm hover:shadow-md min-w-[120px]
-                                    ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-[#eab308] hover:bg-yellow-600 text-slate-900'}`}
+                                    ${saveStatus === 'saved' ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                             >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                                 {saveButtonText[saveStatus]}
                             </button>
                              <div className="h-8 w-px bg-gray-300 mx-1"></div>
